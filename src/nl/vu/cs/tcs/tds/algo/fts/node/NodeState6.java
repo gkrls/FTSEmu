@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.algo.fts.node;
+package algo.fts.node;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -61,8 +61,7 @@ public class NodeState6 {
     }
 
     public int getTotalCount() {
-        // TODO Auto-generated method stub
-        return 0;
+        throw new UnsupportedOperationException("NIY");
     }
 
     public void setNext(int i) {

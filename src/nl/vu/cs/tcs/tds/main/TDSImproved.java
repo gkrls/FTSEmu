@@ -1,10 +1,10 @@
-package nl.vu.cs.tcs.tds.main;
+package main;
 
 import ibis.util.ThreadPool;
 import tds.td.correct2.network.Network5;
 import tds.td.correct2.node.NodeRunner5;
 
-public class TDSCorrect2 implements Runnable{
+public class TDSImproved implements Runnable{
     
     private static boolean done;
     private int nnodes;
@@ -13,7 +13,7 @@ public class TDSCorrect2 implements Runnable{
     private long maxWait;
     
     
-    public TDSCorrect2(int nnodes, long maxWait) {
+    public TDSImproved(int nnodes, long maxWait) {
         this.nnodes = nnodes;
         this.done = false;
         this.nodeRunners = new NodeRunner5[nnodes];

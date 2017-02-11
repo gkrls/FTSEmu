@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.algo.fts.node;
+package algo.fts.node;
 
 public class FDException extends Exception {
 

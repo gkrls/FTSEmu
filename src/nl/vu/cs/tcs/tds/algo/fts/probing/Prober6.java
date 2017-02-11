@@ -1,15 +1,15 @@
-package nl.vu.cs.tcs.tds.algo.fts.probing;
+package algo.fts.probing;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import tds.main.TDS;
-import tds.performance.PerformanceLogger;
-import tds.td.ft2.network.Network6;
-import tds.td.ft2.node.FailureDetector;
-import tds.td.ft2.node.NodeRunner6;
-import tds.td.ft2.node.NodeState6;
+import main.TDS;
+import performance.PerformanceLogger;
+import algo.fts.network.Network6;
+import algo.fts.node.FailureDetector;
+import algo.fts.node.NodeRunner6;
+import algo.fts.node.NodeState6;
 
 public class Prober6 {
     

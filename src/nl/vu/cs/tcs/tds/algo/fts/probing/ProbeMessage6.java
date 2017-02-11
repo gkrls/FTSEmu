@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.algo.fts.probing;
+package algo.fts.probing;
 
 import java.io.Serializable;
 import java.util.Collection;

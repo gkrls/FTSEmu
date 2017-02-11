@@ -1,12 +1,12 @@
-package nl.vu.cs.tcs.tds.algo.fts.node;
+package algo.fts.node;
 
 import java.util.HashSet;
 
-import tds.main.TDS;
-import tds.performance.PerformanceLogger;
-import tds.td.ft2.network.Network6;
-import tds.td.ft2.probing.ProbeMessage6;
-import tds.td.ft2.probing.Prober6;
+import main.TDS;
+import performance.PerformanceLogger;
+import algo.fts.network.Network6;
+import algo.fts.probing.ProbeMessage6;
+import algo.fts.probing.Prober6;
 
 public class FailureDetector {
     

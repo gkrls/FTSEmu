@@ -1,14 +1,14 @@
-package nl.vu.cs.tcs.tds.algo.fts.node;
+package algo.fts.node;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 
-import tds.main.Options;
-import tds.main.TDS;
-import tds.performance.PerformanceLogger;
-import tds.td.ft2.network.Network6;
-import tds.td.ft2.probing.Prober6;
+import util.Options;
+import main.TDS;
+import performance.PerformanceLogger;
+import algo.fts.network.Network6;
+import algo.fts.probing.Prober6;
 
 public class NodeRunner6 implements Runnable{
     

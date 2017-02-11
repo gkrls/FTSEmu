@@ -1,15 +1,15 @@
-package nl.vu.cs.tcs.tds.algo.fts.network;
+package algo.fts.network;
 
 import java.util.HashSet;
 import java.util.Random;
 
 import ibis.util.ThreadPool;
-import tds.performance.PerformanceLogger;
-import tds.td.ft2.node.FailureDetector;
-import tds.td.ft2.node.NodeMessage6;
-import tds.td.ft2.node.NodeRunner6;
-import tds.td.ft2.probing.ProbeMessage6;
-import tds.td.ft2.probing.Prober6;
+import performance.PerformanceLogger;
+import algo.fts.node.FailureDetector;
+import algo.fts.node.NodeMessage6;
+import algo.fts.node.NodeRunner6;
+import algo.fts.probing.ProbeMessage6;
+import algo.fts.probing.Prober6;
 
 public class Network6 {
     

@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.main;
+package util;
 
 public class InvalidOptionException extends IllegalArgumentException {
 

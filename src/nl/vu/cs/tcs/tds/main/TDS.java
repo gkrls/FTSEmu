@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.main;
+package main;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,16 +8,16 @@ import print.color.Ansi.Attribute;
 import print.color.Ansi.BColor;
 import print.color.Ansi.FColor;
 import print.color.ColoredPrinter;
-import tds.performance.PerformanceLogger;
-// TDS: Termination Detection Simulator
+import util.Options;
+import performance.PerformanceLogger;
 public class TDS {
 	
     private TDSOriginal tds1;
     private TDSImproved tds2;
-    private TDSCorrect tds3;
+    private TDSImproved tds3;
     private TDSFaultTolerant tds4;
-    private TDSCorrect2 tds5;
-    private TDSFaultTolerant2 tds6;
+    private TDSImproved tds5;
+    private TDSFaultTolerant tds6;
     private static ColoredPrinter cp;
     private static boolean[] done;
     
@@ -148,10 +148,10 @@ public class TDS {
     	if(Options.instance().get(Options.VERSION) == 0){
     		tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
     		tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-    		tds3 = new TDSCorrect(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
+    		tds3 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
     		tds4 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-        	tds5 = new TDSCorrect2(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-        	tds6 = new TDSFaultTolerant2(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
+        	tds5 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
+        	tds6 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
     		new Thread(tds1).start();
         	new Thread(tds2).start();
         	new Thread(tds3).start();
@@ -168,13 +168,13 @@ public class TDS {
             }
             
             if(versionString.contains("5")){
-                tds5 = new TDSCorrect2(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
+                tds5 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
                 tds.add(tds5);
                 done[4] = false;
             }
             
             if(versionString.contains("6") ){
-                tds6 = new TDSFaultTolerant2(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
+                tds6 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
                 tds.add(tds6);
                 done[5] = false;
             }
@@ -183,131 +183,9 @@ public class TDS {
                 new Thread(r).start();
     	}
 
-    	    
-//    	    if(version == 1){
-//                done[1] = true; done[2] = true; done[3] = true; done[4] = true; done[5] = true;
-//                tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds1).start();
-//    	    }
-//    	    if(version == 2){
-//                done[0] = true; done[2] = true; done[3] = true; done[4] = true; done[5] = true;
-//                tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds2).start();
-//    	    }
-//    	    if(version == 3){
-//                done[0] = true; done[1] = true; done[3] = true; done[4] = true; done[5] = true;
-//                tds3 = new TDSCorrect(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds3).start();
-//    	    }
-//    	    if(version == 4){
-//                done[0] = true; done[1] = true; done[2] = true; done[4] = true; done[5] = true;
-//                tds4 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds4).start(); 
-//    	    }
-//    	    if(version == 5){
-//    	        done[0] = done[1] = done[2] = done[3] = done[5] = true;
-//    	        tds5 = new TDSCorrect2(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//    	        new Thread(tds5).start();
-//    	    }
-//    	    
-//    	    if(version == 6) {
-//                done[0] = done[1] = done[2] = done[3] = true; done[4] = true; 
-//                tds6 = new TDSFaultTolerant2(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds6).start();
-//    	    }
-//    	    
-//    	    if(version == 12 || version == 21){
-//                done[2] = true; done[3] = true;
-//                tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds1).start();
-//                new Thread(tds2).start();
-//    	    }
-//    	    if(version == 13 || version == 31){
-//                done[1] = true; done[3] = true;
-//                tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds3 = new TDSCorrect(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds1).start();
-//                new Thread(tds3).start();
-//    	        
-//    	    }
-//    	    if(version == 14 || version == 41){
-//                done[1] = true; done[2] = true;
-//                tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds4 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds1).start();
-//                new Thread(tds4).start();
-//    	    }
-//    	    if(version == 23 || version == 32){
-//                done[0] = true; done[3] = true;
-//                tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds3 = new TDSCorrect(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds2).start();
-//                new Thread(tds3).start();
-//    	    }
-//    	    if(version == 24 || version == 42){
-//                done[0] = true; done[2] = true;
-//                tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds4 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds2).start();
-//                new Thread(tds4).start();
-//    	    }
-//    	    if(version == 34 || version == 43){
-//                done[0] = true; done[1] = true;
-//                tds3 = new TDSCorrect(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds4 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds3).start();
-//                new Thread(tds4).start();
-//    	    }
-//    	    if(version == 123 || version == 213 || version == 231 || version == 312 || version == 321 || version == 132){
-//                done[3] = true;
-//                tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds3 = new TDSCorrect(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds1).start();
-//                new Thread(tds2).start();
-//                new Thread(tds3).start();
-//    	    }
-//    	    if(version == 124 || version == 142 || version == 214 || version == 241 || version == 412 || version == 421){
-//                done[2] = true;
-//                tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds4 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds1).start();
-//                new Thread(tds2).start();
-//                new Thread(tds4).start();
-//    	    }
-//    	    if(version == 134 || version == 143 || version == 314 || version == 341 || version == 431 || version == 413){
-//                done[1] = true;
-//                tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds3 = new TDSCorrect(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds4 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds1).start();
-//                new Thread(tds3).start();
-//                new Thread(tds4).start();
-//    	    }
-//    	    if(version == 234 || version == 243 || version == 324 || version == 342 || version == 423 || version == 432){
-//                done[0] = true;
-//                tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds3 = new TDSCorrect(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds4 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds2).start();
-//                new Thread(tds3).start();
-//                new Thread(tds4).start();
-//    	    }
-//    	    if(version == 156) {
-//    	        done[1] = done[2] = done[3] = true;
-//                tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds5 = new TDSCorrect2(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                tds6 = new TDSFaultTolerant2(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-//                new Thread(tds1).start();
-//                new Thread(tds5).start();
-//                new Thread(tds6).start();
-//    	    }
-//    	}
-//
-//
+
     	waitAllDone();
+    	
     	if(Options.instance().get(Options.FLUSH_CSV) == 1){
     		try {
 				PerformanceLogger.instance().clearCSV2();

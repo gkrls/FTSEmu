@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.main;
+package util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
