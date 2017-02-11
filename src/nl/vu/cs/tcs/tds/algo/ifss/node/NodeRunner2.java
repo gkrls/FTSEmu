@@ -2,38 +2,38 @@ package algo.ifss.node;
 
 import java.util.Random;
 
-import tds.main.Options;
-import tds.main.TDS;
-import tds.td.correct2.network.Network5;
-import tds.td.correct2.probing.Prober5;
+import util.Options;
+import main.TDS;
+import algo.ifss.network.Network2;
+import algo.ifss.probing.Prober2;
 
-public class NodeRunner5 implements Runnable{
+public class NodeRunner2 implements Runnable{
     
     private final int mynode;
     private final int nnodes;
-    private final NodeState5 state;
-    private final Network5 network;
+    private final NodeState2 state;
+    private final Network2 network;
     private boolean mustStop = false;
     private Random random = new Random();
     private boolean started = false;
     private boolean isPassive = true;
-    private Prober5 prober;
+    private Prober2 prober;
     
     
-    public NodeRunner5(int mynode, int nnodes, Network5 network, boolean initiallyActive){
+    public NodeRunner2(int mynode, int nnodes, Network2 network, boolean initiallyActive){
         this.mynode = mynode;
         this.nnodes = nnodes;
         this.isPassive = !initiallyActive;
-        this.state = new NodeState5(!initiallyActive, mynode, nnodes);
+        this.state = new NodeState2(!initiallyActive, mynode, nnodes);
         network.registerNode(this);
         this.network = network;
         Thread t = new Thread(this);
         t.start();
     }
     
-    public void attachProber(Prober5 p){ this.prober = p; }
+    public void attachProber(Prober2 p){ this.prober = p; }
     public int getId(){ return mynode; }
-    public NodeState5 getState() { return this.state.copy(); }
+    public NodeState2 getState() { return this.state.copy(); }
     public synchronized int getSeq() { return state.getSeq(); }
     public synchronized void incSeq() { state.incSeq(); }
     public synchronized int getBlack() { return this.state.getBlack(); }
@@ -42,22 +42,22 @@ public class NodeRunner5 implements Runnable{
     
     public synchronized void stopRunning() {
         if(!state.isPassive()) {
-            TDS.writeString(0,"Got stopRunning message but was not passive!");
+            TDS.writeString(-2," [I-FSS]\tGot stopRunning message but was not passive!");
         }
         mustStop = true;
         notifyAll();
     }
     
     private void writeString(String s) {
-        TDS.writeString(5, " Node " + mynode + ": \t" + s);
+        TDS.writeString(2, " Node " + mynode + ": \t" + s);
     }
     
-    public synchronized void receiveMessage(NodeMessage5 m) {
+    public synchronized void receiveMessage(NodeMessage2 m) {
         writeString("received message from " + m.getSenderId());
         this.state.setPassive(false);
         this.isPassive = false;
         notifyAll();
-        NodeState5 state = this.state.copy();
+        NodeState2 state = this.state.copy();
         if( (m.getSenderId() < mynode && m.getSeq() == state.getSeq() + 1)  ||
                 (m.getSenderId() > mynode && m.getSeq() == state.getSeq())   ){
             this.state.setBlack(furthest(state.getBlack(), m.getSenderId()));
@@ -69,7 +69,7 @@ public class NodeRunner5 implements Runnable{
     
     private void sendMessage(int node) {
         writeString("send a message to " + node);
-        network.sendMessage(node, new NodeMessage5(mynode, this.state.getSeq()));
+        network.sendMessage(node, new NodeMessage2(mynode, this.state.getSeq()));
         this.state.incCount();
     }
     

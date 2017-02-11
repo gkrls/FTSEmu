@@ -6,17 +6,17 @@ import java.util.Random;
 import ibis.util.ThreadPool;
 import performance.PerformanceLogger;
 import algo.fts.node.FailureDetector;
-import algo.fts.node.NodeMessage6;
-import algo.fts.node.NodeRunner6;
-import algo.fts.probing.ProbeMessage6;
-import algo.fts.probing.Prober6;
+import algo.fts.node.NodeMessage3;
+import algo.fts.node.NodeRunner3;
+import algo.fts.probing.ProbeMessage3;
+import algo.fts.probing.Prober3;
 
-public class Network6 {
+public class Network3 {
     
     private final int nnodes;
-    private final NodeRunner6[] nodeRunners;
-    private final Prober6[] probers;
-    private final NodeCrasher2 nc;
+    private final NodeRunner3[] nodeRunners;
+    private final Prober3[] probers;
+    private final NodeCrasher nc;
     private final FailureDetector[] fds;
     
     private HashSet<Integer> crashed;
@@ -29,14 +29,14 @@ public class Network6 {
     
     
     
-    public Network6(int nnodes) {
+    public Network3(int nnodes) {
         this.nnodes = nnodes;
         this.nodeCount = 0;
         this.random = new Random();
-        this.nodeRunners = new NodeRunner6[nnodes];
-        this.probers = new Prober6[nnodes];
+        this.nodeRunners = new NodeRunner3[nnodes];
+        this.probers = new Prober3[nnodes];
         this.fds = new FailureDetector[nnodes];
-        this.nc = new NodeCrasher2(this, nnodes);
+        this.nc = new NodeCrasher(this, nnodes);
         this.crashed = new HashSet<Integer>();
         this.stopAll = false;
         this.tokenLastVisited = -1;
@@ -51,22 +51,22 @@ public class Network6 {
             try { wait(); } catch (InterruptedException e) {System.out.println("HERE OK");}
         }
         
-        for(NodeRunner6 r: nodeRunners) r.start();
+        for(NodeRunner3 r: nodeRunners) r.start();
         nc.start();
     }
     
-    public synchronized void registerNode(NodeRunner6 nodeRunner) {
+    public synchronized void registerNode(NodeRunner3 nodeRunner) {
         nodeCount++;
         nodeRunners[nodeRunner.getId()] = nodeRunner;
         fds[nodeRunner.getId()] = new FailureDetector(nodeRunner.getId(), nnodes, this, nodeRunner);
-        probers[nodeRunner.getId()] = new Prober6(nodeRunner.getId(), nnodes, this, nodeRunner, fds[nodeRunner.getId()]);
+        probers[nodeRunner.getId()] = new Prober3(nodeRunner.getId(), nnodes, this, nodeRunner, fds[nodeRunner.getId()]);
         fds[nodeRunner.getId()].linkWithProber(probers[nodeRunner.getId()]);
         
         nodeRunner.attachProber(probers[nodeRunner.getId()]);
         if(nodeCount == nnodes) { notifyAll(); }
     }
     
-    public void sendMessage(final int dest, final NodeMessage6 msg) {
+    public void sendMessage(final int dest, final NodeMessage3 msg) {
         if(!crashed.contains(dest)) {
             final int delay = random.nextInt(50);
             ThreadPool.createNew(() -> {
@@ -111,10 +111,10 @@ public class Network6 {
         ThreadPool.createNew(new Runnable() {
             @Override
             public void run() {
-                synchronized (Network6.class) {
+                synchronized (Network3.class) {
                     lastPassive = System.currentTimeMillis();
-                    PerformanceLogger.instance().setTokensUpToTerm(6);
-                    PerformanceLogger.instance().setBackupTokensUpToTerm(6);
+                    PerformanceLogger.instance().setTokensUpToTerm(3);
+                    PerformanceLogger.instance().setBackupTokensUpToTerm(3);
                 }
                 
             }
@@ -133,18 +133,18 @@ public class Network6 {
     public void killNodes() {
         this.stopAll = true;
         nc.stop();
-        for(NodeRunner6 r: nodeRunners) { r.stopRunning(); }
+        for(NodeRunner3 r: nodeRunners) { r.stopRunning(); }
     }
 
 
-    public void sendFirstProbeMessage(int i, ProbeMessage6 token) {
+    public void sendFirstProbeMessage(int i, ProbeMessage3 token) {
         ThreadPool.createNew(() -> {
             probers[i].receiveFirstMessage(token);
         }, "ProbeSender6");
         
     }
 
-    public void sendProbeMessage(ProbeMessage6 token, int dest) {
+    public void sendProbeMessage(ProbeMessage3 token, int dest) {
         ThreadPool.createNew(() -> {
             int delay = random.nextInt(50);
             try { Thread.sleep(delay); } catch(InterruptedException e) {}

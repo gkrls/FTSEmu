@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.util;
+package util;
 
 public class Tuple<T, U> {
 	final private T first;

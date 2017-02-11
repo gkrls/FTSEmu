@@ -3,35 +3,35 @@ package algo.ifss.probing;
 import java.io.Serializable;
 
 import ibis.util.ThreadPool;
-import tds.main.TDS;
-import tds.performance.PerformanceLogger;
-import tds.td.correct2.network.Network5;
-import tds.td.correct2.node.NodeRunner5;
-import tds.td.correct2.node.NodeState5;
+import main.TDS;
+import performance.PerformanceLogger;
+import algo.ifss.network.Network2;
+import algo.ifss.node.NodeRunner2;
+import algo.ifss.node.NodeState2;
 
-public class Prober5{
+public class Prober2{
     private final int totalNodes;
     private final int mynode;
-    private final Network5 network;
+    private final Network2 network;
     
-    private final NodeRunner5 nodeRunner;
+    private final NodeRunner2 nodeRunner;
     private boolean holdsToken = false;
     private boolean waitNodeRunner = false;
     
-    public Prober5(int mynode, int totalNodes, Network5 network, NodeRunner5 nodeRunner) {
+    public Prober2(int mynode, int totalNodes, Network2 network, NodeRunner2 nodeRunner) {
         this.nodeRunner = nodeRunner;
         this.totalNodes = totalNodes;
         this.mynode = mynode;
         this.network = network;
         
         if(mynode == 0) {
-            ProbeMessage5 token = new ProbeMessage5(mynode, totalNodes);
-            PerformanceLogger.instance().addTokenBits(5, token.copy());
+            ProbeMessage2 token = new ProbeMessage2(mynode, totalNodes);
+            PerformanceLogger.instance().addTokenBits(2, token.copy());
             network.sendFirstProbeMessage(0, token);
         }
     }
     
-    public synchronized void receiveFirstMessage(ProbeMessage5 token) {
+    public synchronized void receiveFirstMessage(ProbeMessage2 token) {
         writeString("Starting Probing!!!");
         this.waitUntilPassive();
         long start = System.nanoTime();
@@ -47,12 +47,12 @@ public class Prober5{
         nodeRunner.setBlack(mynode);
         nodeRunner.incSeq();
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(5, end - start);
+        PerformanceLogger.instance().addProcTime(2, end - start);
         
     }
     
     
-    public synchronized void receiveMessage(ProbeMessage5 token) {
+    public synchronized void receiveMessage(ProbeMessage2 token) {
         
         this.waitUntilPassive();
         long start = System.nanoTime();
@@ -74,8 +74,8 @@ public class Prober5{
                     + " milliseconds after last node became passive.");
             
             long end = System.nanoTime();
-            PerformanceLogger.instance().addProcTime(5, end - start);
-            TDS.instance().announce(5);
+            PerformanceLogger.instance().addProcTime(2, end - start);
+            TDS.instance().announce(2);
         }else{
             writeString("INCONSISTENT SNAPSHOT");
             propagate(token);
@@ -85,7 +85,7 @@ public class Prober5{
         PerformanceLogger.instance().addProcTime(5, end - start);
     }
     
-    private void propagate(ProbeMessage5 token) {
+    private void propagate(ProbeMessage2 token) {
         token.setBlack(nodeRunner.furthest(nodeRunner.getState().getBlack(), (mynode + 1) % totalNodes));
         token.setSender(mynode);
         network.sendProbeMessage((mynode + 1) % totalNodes, token);
@@ -93,8 +93,8 @@ public class Prober5{
         nodeRunner.setBlack(mynode);
         nodeRunner.incSeq();
         
-        PerformanceLogger.instance().incTokens(5);
-        PerformanceLogger.instance().addTokenBits(5, token.copy());
+        PerformanceLogger.instance().incTokens(2);
+        PerformanceLogger.instance().addTokenBits(2, token.copy());
         
     }
     
@@ -118,6 +118,6 @@ public class Prober5{
     }
     
     private void writeString(String s) {
-        TDS.writeString(5, " Node " + mynode + ": \t" + s);
+        TDS.writeString(2, " Node " + mynode + ": \t" + s);
     }
 }

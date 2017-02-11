@@ -3,7 +3,7 @@ package algo.fts.node;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-public class NodeState6 {
+public class NodeState3 {
     
     private boolean passive;
     private int nodeId, black, seq, nnodes, next;
@@ -11,7 +11,7 @@ public class NodeState6 {
     private int[] count;
     
 
-    public NodeState6(boolean passive, int mynode, int nnodes) {
+    public NodeState3(boolean passive, int mynode, int nnodes) {
         this.passive = passive;
         this.nodeId = mynode;
         this.nnodes = nnodes;
@@ -24,8 +24,8 @@ public class NodeState6 {
         for (int i = 0; i < count.length; i++) count[i] = 0;
     }
     
-    public synchronized NodeState6 copy() {
-        NodeState6 s = new NodeState6(passive, nodeId, nnodes);
+    public synchronized NodeState3 copy() {
+        NodeState3 s = new NodeState3(passive, nodeId, nnodes);
         
         s.passive = this.passive;
         s.seq = this.seq;

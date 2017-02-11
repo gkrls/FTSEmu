@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.algo.ofss.node;
+package algo.ofss.node;
 
 public class NodeMessage1 {
 	

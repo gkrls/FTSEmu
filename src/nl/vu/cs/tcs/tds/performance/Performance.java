@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.performance;
+package performance;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -9,11 +9,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.instrument.Instrumentation; 
 
-import tds.main.Options;
-import tds.td.correct2.probing.ProbeMessage5;
-import tds.td.ft2.probing.ProbeMessage6;
-import tds.td.original.probing.ProbeMessage1;
-import tds.util.ObjectSizeFetcher;
+import util.Options;
+import algo.ifss.probing.ProbeMessage2;
+import algo.fts.probing.ProbeMessage3;
+import algo.ofss.probing.ProbeMessage1;
+import util.ObjectSizeFetcher;
 
 
 
@@ -131,7 +131,7 @@ public class Performance {
         }  
     }
 	
-	public synchronized void addBits(ProbeMessage5 token) {
+	public synchronized void addBits(ProbeMessage2 token) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         try {
@@ -145,7 +145,7 @@ public class Performance {
         }
 	}
 	
-	public synchronized void addBits(final ProbeMessage6 token) {
+	public synchronized void addBits(final ProbeMessage3 token) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         try {

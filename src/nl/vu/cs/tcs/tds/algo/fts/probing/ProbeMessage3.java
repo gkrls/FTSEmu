@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class ProbeMessage6 implements Serializable{
+public class ProbeMessage3 implements Serializable{
     /**
      * 
      */
@@ -15,7 +15,7 @@ public class ProbeMessage6 implements Serializable{
     private int[] count;
     private int sender, seq, black, nnodes;
     
-    public ProbeMessage6(int sender, int nnodes) {
+    public ProbeMessage3(int sender, int nnodes) {
         this.black = (sender == 0) ? nnodes - 1 : sender;
         this.seq = 0;
         this.sender = sender;
@@ -92,8 +92,8 @@ public class ProbeMessage6 implements Serializable{
         
     }
     
-    public synchronized ProbeMessage6 copy() {
-        ProbeMessage6 result = new ProbeMessage6(this.sender, this.nnodes);
+    public synchronized ProbeMessage3 copy() {
+        ProbeMessage3 result = new ProbeMessage3(this.sender, this.nnodes);
         for ( int i = 0; i < result.count.length; i++) {
             result.count[i] = this.count[i];
         }

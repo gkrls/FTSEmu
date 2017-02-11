@@ -1,15 +1,13 @@
-package nl.vu.cs.tcs.tds.algo.ofss.node;
+package algo.ofss.node;
 
 import java.util.Random;
 
-import tds.main.Options;
-import tds.main.TDS;
-import tds.performance.PerformanceLogger;
-import tds.td.original.network.Network1;
-import tds.td.original.probing.Prober1;
-import tds.util.Activity;
-import tds.util.ActivityGenerator;
-import tds.util.Color;
+import util.Options;
+import main.TDS;
+import performance.PerformanceLogger;
+import algo.ofss.network.Network1;
+import algo.ofss.probing.Prober1;
+import util.Color;
 
 // A NodeRunner thread simulates a node that is doing some computation,
 // is sending some messages, or is passive.
@@ -58,7 +56,7 @@ public class NodeRunner1 implements Runnable {
     public synchronized void stopRunning() {
         if (!state.isPassive()) {
             // Failure in termination detection?
-            TDS.writeString(0, "Got stopRunning message but was not passive!");
+            TDS.writeString(-2, " [O-FSS]\tGot stopRunning message but was not passive!");
         }
         mustStop = true;
         notifyAll();

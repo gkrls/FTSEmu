@@ -1,10 +1,10 @@
-package nl.vu.cs.tcs.tds.algo.ofss.probing;
+package algo.ofss.probing;
 
 import java.io.Serializable;
 
-import tds.td.original.node.NodeRunner1;
-import tds.td.original.node.NodeState1;
-import tds.util.Color;
+import algo.ofss.node.NodeRunner1;
+import algo.ofss.node.NodeState1;
+import util.Color;
 
 public class ProbeMessage1 implements Serializable{
 	

@@ -1,16 +1,16 @@
-package nl.vu.cs.tcs.tds.algo.fts.network;
+package algo.fts.network;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
 import ibis.util.ThreadPool;
-import tds.main.Options;
-import tds.main.TDS;
+import util.Options;
+import main.TDS;
 
-public class NodeCrasher2 {
+public class NodeCrasher {
     
-    private Network6 network;
+    private Network3 network;
     private int numCrashedNodes;
     private int[] crashedNodes;
     private int nnodes;
@@ -18,7 +18,7 @@ public class NodeCrasher2 {
     
     private Random random;
     
-    public NodeCrasher2(Network6 network, int nnodes) {
+    public NodeCrasher(Network3 network, int nnodes) {
         this.stop = false;
         this.network = network;
         this.nnodes = nnodes;
@@ -43,7 +43,7 @@ public class NodeCrasher2 {
             crashedNodes[i] = newCrash;
         }
         
-        TDS.writeString(0, "Will crash nodes: " + Arrays.toString(crashedNodes));
+        TDS.writeString(0, " [FTS]\tWill crash nodes: " + Arrays.toString(crashedNodes));
     
         for(int crashedNode : crashedNodes) {
             int delay = random.nextInt(2000);
@@ -72,9 +72,6 @@ public class NodeCrasher2 {
                 }
             } catch (NodeCrasherStopException e) {
                 return;
-//                try {
-//                    throw e;
-//                } catch (Exception e1) { return; }
             }
         }, "CrashNotifier");
         

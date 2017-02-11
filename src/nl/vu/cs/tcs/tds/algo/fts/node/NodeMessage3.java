@@ -1,10 +1,10 @@
 package algo.fts.node;
 
-public class NodeMessage6 {
+public class NodeMessage3 {
     
     private int sender, seq;
 
-    public NodeMessage6(int sender, int seq) {
+    public NodeMessage3(int sender, int seq) {
         this.sender = sender;
         this.seq = seq;
     }

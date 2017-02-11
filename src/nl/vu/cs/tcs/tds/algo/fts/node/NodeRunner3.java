@@ -7,38 +7,38 @@ import java.util.Random;
 import util.Options;
 import main.TDS;
 import performance.PerformanceLogger;
-import algo.fts.network.Network6;
-import algo.fts.probing.Prober6;
+import algo.fts.network.Network3;
+import algo.fts.probing.Prober3;
 
-public class NodeRunner6 implements Runnable{
+public class NodeRunner3 implements Runnable{
     
     private final int mynode;
     private final int nnodes;
-    private final NodeState6 state;
-    private final Network6 network;
+    private final NodeState3 state;
+    private final Network3 network;
     private boolean mustStop = false;
     private Random random = new Random();
     private boolean started = false;
     private boolean isPassive = false;
-    private Prober6 prober;
+    private Prober3 prober;
     private boolean crashed = false;
     private Thread t;
     
     
-    public NodeRunner6(int mynode, int nnodes, Network6 network, boolean initiallyActive) {
+    public NodeRunner3(int mynode, int nnodes, Network3 network, boolean initiallyActive) {
         this.mynode = mynode;
         this.nnodes = nnodes;
         this.isPassive = !initiallyActive;
-        this.state = new NodeState6(!initiallyActive, mynode, nnodes);
+        this.state = new NodeState3(!initiallyActive, mynode, nnodes);
         network.registerNode(this);
         this.network = network;
         t = new Thread(this);
         t.start();
     }
     
-    public void attachProber(Prober6 p) { this.prober = p; }
+    public void attachProber(Prober3 p) { this.prober = p; }
     public int getId() { return mynode; }
-    public NodeState6 getState() { return this.state.copy(); }
+    public NodeState3 getState() { return this.state.copy(); }
     
     public synchronized int getSeq() { return state.getSeq(); }
     public synchronized void incSeq() { state.incSeq(); }
@@ -48,7 +48,7 @@ public class NodeRunner6 implements Runnable{
     public synchronized int getNext() { return this.state.getNext(); }
     public synchronized boolean isCrashed() { return this.crashed; }
 
-    void writeString(String s) { TDS.writeString(6, " Node " + mynode + ": \t" + s); }
+    void writeString(String s) { TDS.writeString(3, " Node " + mynode + ": \t" + s); }
     
     private synchronized boolean shouldStop() { return mustStop; }
     public synchronized void start() {started = true; notifyAll(); }
@@ -57,7 +57,7 @@ public class NodeRunner6 implements Runnable{
     
     public synchronized void stopRunning() {
         if(!state.isPassive())
-            TDS.writeString(6,"Got stopRunning message but was not passive!");
+            TDS.writeString(-2," [FTS]\tGot stopRunning message but was not passive!");
         mustStop = true;
         notifyAll();
     }
@@ -65,11 +65,11 @@ public class NodeRunner6 implements Runnable{
     private void sendMessage(int node) {
         writeString("send a message to " + node);
         if(state.inCrashed(node) || state.inReport(node)) return;
-        network.sendMessage(node, new NodeMessage6(mynode, this.state.getSeq()));
+        network.sendMessage(node, new NodeMessage3(mynode, this.state.getSeq()));
         this.state.incCount(node);
     }
     
-    public synchronized void receiveMessage(NodeMessage6 m) {
+    public synchronized void receiveMessage(NodeMessage3 m) {
         long start = System.nanoTime();
         if(!crashed) {
             if(!state.inCrashed(m.getSenderId())){
@@ -88,7 +88,7 @@ public class NodeRunner6 implements Runnable{
             }
         }
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(6, end - start);
+        PerformanceLogger.instance().addProcTime(3, end - start);
     }
     
     private synchronized void activate() {
@@ -104,9 +104,9 @@ public class NodeRunner6 implements Runnable{
     
     @Override
     public void run() {
-        writeString("Thread started");
+        writeString("Starting...");
         waitUntilStarted();
-        writeString("Cluster started");
+        writeString("Started");
         
         while(!shouldStop()){
             //writeString("ACTIVE");
@@ -135,7 +135,7 @@ public class NodeRunner6 implements Runnable{
         int level = Options.instance().get(Options.ACTIVITY_LEVEL);
         int nActivities = 1 + random.nextInt(level);
         for(int i = 0; i < nActivities; i++) {
-            int timeToSleep = random.nextInt(1000); //computation lol
+            int timeToSleep = random.nextInt(1000); //computation
             try { Thread.sleep(timeToSleep); } catch(InterruptedException e) {}
             
             int nMessages = random.nextInt(level) + (this.mynode == 0? 1 : 0);

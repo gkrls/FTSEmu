@@ -1,24 +1,24 @@
 package main;
 
 import ibis.util.ThreadPool;
-import tds.performance.PerformanceLogger;
-import tds.td.ft2.network.Network6;
-import tds.td.ft2.node.NodeRunner6;
+import performance.PerformanceLogger;
+import algo.fts.network.Network3;
+import algo.fts.node.NodeRunner3;
 
 public class TDSFaultTolerant implements Runnable{
     
     private volatile boolean done;
     private int nnodes;
-    private NodeRunner6[] nodeRunners;
-    private Network6 network;
+    private NodeRunner3[] nodeRunners;
+    private Network3 network;
     private long maxWait;
     
     
     public TDSFaultTolerant(int nnodes, long maxWait) {
         this.nnodes = nnodes;
         this.done = false;
-        this.nodeRunners = new NodeRunner6[nnodes];
-        this.network = new Network6(nnodes);
+        this.nodeRunners = new NodeRunner3[nnodes];
+        this.network = new Network3(nnodes);
         this.maxWait = maxWait;
         
     }
@@ -37,8 +37,8 @@ public class TDSFaultTolerant implements Runnable{
                     }catch(Exception e){
                         System.out.println("YES!");
                     }
-                    PerformanceLogger.instance().timeout(6);
-                    TDS.writeString(0, "NO TERMINATION DETECTED IN " + maxWait + " ms" );
+                    PerformanceLogger.instance().timeout(3);
+                    TDS.writeString(-1, " [FTS]\tNO TERMINATION DETECTED IN " + maxWait + " ms" );
                     this.setDone();
                 }, "TimeoutCount6");
                 wait();
@@ -51,13 +51,13 @@ public class TDSFaultTolerant implements Runnable{
     @Override
     public void run() {
         for(int i = 0; i < nnodes; i++) {
-            nodeRunners[i] = new NodeRunner6(i, nnodes, network, i == 0);
+            nodeRunners[i] = new NodeRunner3(i, nnodes, network, i == 0);
         }
         
         network.waitForAllNodes();
         this.waitTillDone();
         network.killNodes();
-        TDS.instance().setDone(6);
+        TDS.instance().setDone(3);
     }
     
     public synchronized void announce() {

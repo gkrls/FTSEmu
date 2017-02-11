@@ -1,23 +1,23 @@
 package main;
 
 import ibis.util.ThreadPool;
-import tds.td.correct2.network.Network5;
-import tds.td.correct2.node.NodeRunner5;
+import algo.ifss.network.Network2;
+import algo.ifss.node.NodeRunner2;
 
 public class TDSImproved implements Runnable{
     
     private static boolean done;
     private int nnodes;
-    private NodeRunner5[] nodeRunners;
-    private Network5 network;
+    private NodeRunner2[] nodeRunners;
+    private Network2 network;
     private long maxWait;
     
     
     public TDSImproved(int nnodes, long maxWait) {
         this.nnodes = nnodes;
         this.done = false;
-        this.nodeRunners = new NodeRunner5[nnodes];
-        this.network = new Network5(nnodes);
+        this.nodeRunners = new NodeRunner2[nnodes];
+        this.network = new Network2(nnodes);
         this.maxWait = maxWait;
     }
     
@@ -33,9 +33,10 @@ public class TDSImproved implements Runnable{
                     try {
                         Thread.sleep(maxWait);
                     } catch (Exception e) {}
-                    TDS.writeString(0, "NO TERMINATION DETECTED IN " + maxWait + " ms");
+                    
+                    TDS.writeString(-1, " [I-FSS]\tNO TERMINATION DETECTED IN " + maxWait + " ms");
                     this.setDone();
-                }, "TimeoutCount_5");
+                }, "TimeoutCount_2");
                 wait();
             }catch (InterruptedException e){}
         }
@@ -44,13 +45,13 @@ public class TDSImproved implements Runnable{
     public void run() {
         for ( int i = 0; i < nnodes; i++ ) {
             // Here choose who starts as active
-            nodeRunners[i] = new NodeRunner5(i, nnodes, network, i % 2 == 0 || i % 5 == 0); 
+            nodeRunners[i] = new NodeRunner2(i, nnodes, network, i % 2 == 0 || i % 5 == 0); 
         }
         
         network.waitForAllNodes();
         waitTillDone();
         network.killNodes();
-        TDS.instance().setDone(5);
+        TDS.instance().setDone(2);
     }
     
     public synchronized void announce() {

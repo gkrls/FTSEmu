@@ -1,10 +1,10 @@
-package nl.vu.cs.tcs.tds.main;
+package main;
 
 import ibis.util.ThreadPool;
-import tds.td.original.network.Network1;
-import tds.td.original.node.NodeRunner1;
+import algo.ofss.network.Network1;
+import algo.ofss.node.NodeRunner1;
 
-public class TDSOriginal implements Runnable{
+public class TDSOriginal implements Runnable { 
 	
 	private static boolean done;
 	private NodeRunner1[] nodeRunners;
@@ -34,7 +34,7 @@ public class TDSOriginal implements Runnable{
 					}catch(Exception e){
 						//ignore
 					}
-					TDS.writeString(1, "NO TERMINATION DETECTED IN " + maxWait + " ms" );
+					TDS.writeString(-1, " [O-FSS]\tNO TERMINATION DETECTED IN " + maxWait + " ms" );
     				this.setDone();
 				}, "TimeoutCount_1" );
 				wait();
@@ -45,12 +45,11 @@ public class TDSOriginal implements Runnable{
 	}
 	
 	public void run(){
-		//ThreadPool.createNew(() -> {
+
 		for(int i = 0; i < nnodes; i++)
 			nodeRunners[i] = new NodeRunner1(i, nnodes, network, i == 0);
 		network.waitForAllNodes();
-		//}, "Simulation_Original");
-		
+
 		waitTillDone();
 		network.killNodes();
 		TDS.instance().setDone(1);

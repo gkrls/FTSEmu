@@ -6,23 +6,23 @@ import java.util.stream.IntStream;
 
 import main.TDS;
 import performance.PerformanceLogger;
-import algo.fts.network.Network6;
+import algo.fts.network.Network3;
 import algo.fts.node.FailureDetector;
-import algo.fts.node.NodeRunner6;
-import algo.fts.node.NodeState6;
+import algo.fts.node.NodeRunner3;
+import algo.fts.node.NodeState3;
 
-public class Prober6 {
+public class Prober3 {
     
     private final int nnodes;
     private final int mynode;
-    private final Network6 network;
+    private final Network3 network;
     private final FailureDetector fd;
     
-    private final NodeRunner6 nodeRunner;
+    private final NodeRunner3 nodeRunner;
     private final boolean holdsToken;
     private volatile boolean waitNodeRunner;
 
-    public Prober6(int id, int nnodes, Network6 network, NodeRunner6 nodeRunner, FailureDetector failureDetector) {
+    public Prober3(int id, int nnodes, Network3 network, NodeRunner3 nodeRunner, FailureDetector failureDetector) {
         this.mynode = id;
         this.nnodes = nnodes;
         this.network = network;
@@ -32,16 +32,16 @@ public class Prober6 {
         this.holdsToken = false;
         this.waitNodeRunner = false;
         if(mynode == 0) {
-            ProbeMessage6 token = new ProbeMessage6(mynode, nnodes);
+            ProbeMessage3 token = new ProbeMessage3(mynode, nnodes);
             token.incSeq();
-            PerformanceLogger.instance().addTokenBits(6, token.copy());
+            PerformanceLogger.instance().addTokenBits(3, token.copy());
             network.sendProbeMessage(token, 0);
         }
     }
     
-    public synchronized void receiveFirstMessage(ProbeMessage6 token) {}
+    public synchronized void receiveFirstMessage(ProbeMessage3 token) {}
     
-    public synchronized void receiveMessage(ProbeMessage6 token) {
+    public synchronized void receiveMessage(ProbeMessage3 token) {
         if(!this.nodeRunner.isCrashed()){
             writeString("TOKEN: seq: " + token.getSeq() + ", black: " + token.getBlack() + " from: " + token.getSender() + " \t\t NODE: seq: " + nodeRunner.getSeq() );
             if(token.getSeq() == nodeRunner.getState().getSeq() + 1) {
@@ -59,7 +59,7 @@ public class Prober6 {
         }
     }
     
-    private void handleToken(ProbeMessage6 token) {
+    private void handleToken(ProbeMessage3 token) {
         this.waitUntilPassive();
         long start = System.nanoTime();
         writeString("Handling Token");
@@ -85,13 +85,13 @@ public class Prober6 {
             
             if(sum == 0) { // Actual termination
                 writeString("TERMINATION DETECTED");
-                writeString("PROBER 6: Termination detected "
+                writeString("Termination detected "
                         + (System.currentTimeMillis() - network.getLastPassive())
                         + " milliseconds after last node became passive.");
                 
                 long end = System.nanoTime();
-                PerformanceLogger.instance().addProcTime(6, end - start);
-                TDS.instance().announce(6); //add 6 in TDS.instance
+                PerformanceLogger.instance().addProcTime(3, end - start);
+                TDS.instance().announce(3); //add 6 in TDS.instance
                 return;
             }else {
                 writeString("No Term: " + sum);
@@ -123,9 +123,9 @@ public class Prober6 {
         
         
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(6, end - start);
-        PerformanceLogger.instance().incTokens(6);
-        PerformanceLogger.instance().addTokenBits(6, token.copy());
+        PerformanceLogger.instance().addProcTime(3, end - start);
+        PerformanceLogger.instance().incTokens(3);
+        PerformanceLogger.instance().addTokenBits(3, token.copy());
         
 
     }
@@ -146,14 +146,14 @@ public class Prober6 {
         if(nodeRunner.getNext() == mynode) {
             writeString("N-1 crashed. Announce after passive");
             this.waitUntilPassive();
-            writeString("PROBER 6: Termination detected "
+            writeString("Termination detected "
                     + (System.currentTimeMillis() - network.getLastPassive())
                     + " milliseconds after last node became passive.");
             long end = System.nanoTime();
-            PerformanceLogger.instance().addProcTime(6, end - start);
-            PerformanceLogger.instance().setTokensUpToTerm(6);
-            PerformanceLogger.instance().setBackupTokensUpToTerm(6);
-            TDS.instance().announce(6);
+            PerformanceLogger.instance().addProcTime(3, end - start);
+            PerformanceLogger.instance().setTokensUpToTerm(3);
+            PerformanceLogger.instance().setBackupTokensUpToTerm(3);
+            TDS.instance().announce(3);
             return;
         }
         
@@ -174,7 +174,7 @@ public class Prober6 {
     }
     
     private void writeString(String s) {
-        TDS.writeString(6, " Node " + mynode + ": \t" + s);
+        TDS.writeString(3, " Node " + mynode + ": \t" + s);
     }
 
 

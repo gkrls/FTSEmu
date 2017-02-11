@@ -1,15 +1,15 @@
-package nl.vu.cs.tcs.tds.algo.ofss.network;
+package algo.ofss.network;
 
 
 import java.util.Random;
 
 import ibis.util.ThreadPool;
-import tds.main.TDS;
-import tds.performance.PerformanceLogger;
-import tds.td.original.node.NodeMessage1;
-import tds.td.original.node.NodeRunner1;
-import tds.td.original.probing.ProbeMessage1;
-import tds.td.original.probing.Prober1;
+import main.TDS;
+import performance.PerformanceLogger;
+import algo.ofss.node.NodeMessage1;
+import algo.ofss.node.NodeRunner1;
+import algo.ofss.probing.ProbeMessage1;
+import algo.ofss.probing.Prober1;
 
 public class Network1 {
 

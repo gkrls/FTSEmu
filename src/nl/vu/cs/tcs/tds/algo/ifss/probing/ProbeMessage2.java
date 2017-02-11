@@ -2,7 +2,7 @@ package algo.ifss.probing;
 
 import java.io.Serializable;
 
-public class ProbeMessage5 implements Serializable{
+public class ProbeMessage2 implements Serializable{
     
     /**
      * 
@@ -13,7 +13,7 @@ public class ProbeMessage5 implements Serializable{
     private int count;
     private int black;
 
-    public ProbeMessage5(int sender, int nnodes) {
+    public ProbeMessage2(int sender, int nnodes) {
         this.sender = sender;
         this.nnodes = nnodes;
         this.count = 0;
@@ -51,8 +51,8 @@ public class ProbeMessage5 implements Serializable{
         this.sender = sender;
     }
     
-    public synchronized ProbeMessage5 copy() {
-        ProbeMessage5 result = new ProbeMessage5(this.sender, this.nnodes);
+    public synchronized ProbeMessage2 copy() {
+        ProbeMessage2 result = new ProbeMessage2(this.sender, this.nnodes);
         result.count = this.count;
         result.black = this.black;
         return result;

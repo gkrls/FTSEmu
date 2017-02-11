@@ -4,30 +4,30 @@ import java.util.HashSet;
 
 import main.TDS;
 import performance.PerformanceLogger;
-import algo.fts.network.Network6;
-import algo.fts.probing.ProbeMessage6;
-import algo.fts.probing.Prober6;
+import algo.fts.network.Network3;
+import algo.fts.probing.ProbeMessage3;
+import algo.fts.probing.Prober3;
 
 public class FailureDetector {
     
     private int mynode, nnodes;
-    private Network6 network;
-    private NodeRunner6 nodeRunner;
+    private Network3 network;
+    private NodeRunner3 nodeRunner;
     private boolean waitNodeRunner;
-    private ProbeMessage6 lastToken;
-    private Prober6 prober;
+    private ProbeMessage3 lastToken;
+    private Prober3 prober;
 
-    public FailureDetector(int id, int nnodes, Network6 network, NodeRunner6 nodeRunner) {
+    public FailureDetector(int id, int nnodes, Network3 network, NodeRunner3 nodeRunner) {
         this.mynode = id;
         this.nnodes = nnodes;
         this.network = network;
         this.nodeRunner = nodeRunner;
         
-        this.lastToken = new ProbeMessage6(mynode, nnodes);
+        this.lastToken = new ProbeMessage3(mynode, nnodes);
         lastToken.setBlack(id);
     }
     
-    public void linkWithProber(Prober6 prober){this.prober = prober;}
+    public void linkWithProber(Prober3 prober){this.prober = prober;}
 
     
     /** Called to indicate that node "learns" of someone's crash
@@ -47,7 +47,7 @@ public class FailureDetector {
         if(!crashedReportUnion.contains(crashedNode)) {
             nodeRunner.writeString(crashedNode + " crashed");
             nodeRunner.getREPORT().add(crashedNode);
-            nodeRunner.writeString(crashedNode + " " + nodeRunner.getNext());
+            //nodeRunner.writeString(crashedNode + " " + nodeRunner.getNext());
             if(crashedNode == nodeRunner.getNext()) {
                 prober.newSuccessor();
                 writeString("New successor: " + nodeRunner.getNext());
@@ -63,9 +63,9 @@ public class FailureDetector {
                         
                         
                         network.sendProbeMessage(lastToken, nodeRunner.getNext());
-                        PerformanceLogger.instance().incTokens(6);
-                        PerformanceLogger.instance().incBackupTokens(6);
-                        PerformanceLogger.instance().addTokenBits(6, lastToken.copy());
+                        PerformanceLogger.instance().incTokens(3);
+                        PerformanceLogger.instance().incBackupTokens(3);
+                        PerformanceLogger.instance().addTokenBits(3, lastToken.copy());
                         
                         
                     }
@@ -77,14 +77,14 @@ public class FailureDetector {
         }
         
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(6, end - start);
+        PerformanceLogger.instance().addProcTime(3, end - start);
     }
 
     private void writeString(String string) {
-        TDS.writeString(6, " Node " + mynode + ": \t" + string);
+        TDS.writeString(3, " Node " + mynode + ": \t" + string);
     }
     
-    public void updateLastToken(ProbeMessage6 token) {
+    public void updateLastToken(ProbeMessage3 token) {
         this.lastToken = token;
     }
 }

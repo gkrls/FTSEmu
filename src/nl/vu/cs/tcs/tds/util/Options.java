@@ -1,8 +1,6 @@
 package util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 public class Options {
@@ -29,7 +27,7 @@ public class Options {
 	public static final int DEFAULT_CSV = 0;
 	public static final int DEFAULT_CSV_FLUSH = 0;
 	public static final int DEFAULT_VERSION = 0;
-	private static final int[] ALLOWED_VERSIONS = {156,56,65,1,2,3,4,5,6,12,21,13,31,14,41,23,32,24,42,34,43,123,213,231,312,321,132,124,142,214,241,412,421,134,143,314,341,431,413,234,243,324,342,423,432};
+	private static final int[] ALLOWED_VERSIONS = {1,2,3, 12, 13, 21, 31, 23, 32, 123, 132, 213, 231, 312, 321};
 	public static final int DEFAULT_CRUSHED_NODES = 0;
 	
 	
@@ -96,13 +94,13 @@ public class Options {
 		}
 		if(option == Options.VERSION){
 			if(!contains(Options.ALLOWED_VERSIONS, value)){ //this is working but bad -> fix
-				System.out.println("Use version 1,2,3,4, any combination of them or leave empty to run all 4 versions in parallel");
+				System.out.println("Use version 1,2 or 3, any combination of them, or leave empty to run all 3 versions in parallel");
 				System.exit(1);
 			}
 		}
 		if(option == Options.CRASHED_NODES){
-		    if(value < 0){
-		        System.out.println("Cannot crush less than 2 or more than n-1 nodes");
+		    if(value < 0 || value > Options.instance().get(Options.NUM_OF_NODES) - 1){
+		        System.out.println("Cannot crash less than 0 or more than n-1 nodes");
                 System.exit(1);
 		    }
 		        
@@ -141,8 +139,9 @@ public class Options {
 			getOptByName("-f").setValue(value);
 		if(option == Options.VERSION)
 			getOptByName("-ver").setValue(value);
-		if(option == Options.CRASHED_NODES)
+		if(option == Options.CRASHED_NODES){
 		    getOptByName("-c").setValue(value);
+		}
 		
 	}
 	

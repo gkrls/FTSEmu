@@ -1,6 +1,6 @@
-package nl.vu.cs.tcs.tds.algo.ofss.node;
+package algo.ofss.node;
 
-import tds.util.Color;
+import util.Color;
 
 public class NodeState1 {
 	private boolean passive;

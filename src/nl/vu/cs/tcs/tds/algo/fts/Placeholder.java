@@ -1,4 +1,4 @@
-package nl.vu.cs.tcs.tds.algo.fts;
+package algo.fts;
 
 public class Placeholder {
 

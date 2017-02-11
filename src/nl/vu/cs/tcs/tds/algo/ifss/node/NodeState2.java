@@ -1,12 +1,12 @@
 package algo.ifss.node;
 
-public class NodeState5 {
+public class NodeState2 {
     
     private boolean passive;
     private final int nodeId;
     private int black, count, seq, nnodes;
 
-    public NodeState5(boolean passive, int mynode, int nnodes) {
+    public NodeState2(boolean passive, int mynode, int nnodes) {
         this.passive = passive;
         this.nodeId = mynode;
         this.nnodes = nnodes;
@@ -19,8 +19,8 @@ public class NodeState5 {
         this.seq = 0;
     }
 
-    public synchronized NodeState5 copy() {
-        NodeState5 copy = new NodeState5(this.passive, this.nodeId, this.nnodes);
+    public synchronized NodeState2 copy() {
+        NodeState2 copy = new NodeState2(this.passive, this.nodeId, this.nnodes);
         copy.count = this.count;
         copy.black = this.black;
         copy.seq = this.seq;

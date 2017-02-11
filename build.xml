@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="TDS" default="jar" basedir=".">
+
+    <property name="version" value="0.1" />
+    <property name="build_path" value="build" />
+    <property name="src_path" value="src" />
+    <property name="external_path" value="external" />
+    <property name="TDS_jar_location" value="TDS-${version}.jar" />
+
+    <target name="clean">
+	<delete dir="${build_path}" />
+	<delete file="${TDS_jar_location}" />
+    </target>
+
+    <target name="init">
+	<mkdir dir="${build_path}" />
+    </target>
+
+    <target name="compile" depends="init" description="">
+	<javac debug="true" includeantruntime="false" srcdir="${src_path}" destdir="${build_path}">
+	    <classpath>
+		<fileset dir="${external_path}">
+		    <include name="**/*.jar" />
+		</fileset>
+	    </classpath>
+	</javac>
+    </target>
+
+    <target name="jar" depends="compile">
+	<!-- Create self-containing jar -->
+	<jar destfile="tmp-${TDS_jar_location}">
+	    <zipgroupfileset dir="${external_path}" includes="**/*.jar" />
+	</jar>
+	<unjar src="tmp-${TDS_jar_location}" dest="${build_path}" />
+	<delete file="tmp-${TDS_jar_location}"/>
+	<jar destfile="${TDS_jar_location}">
+	    <fileset dir="${build_path}" includes="**/*.class"/>
+	    <file name="log4j.properties"/>
+	    <manifest>
+		<attribute name="Main-Class" value="main.TDS" />
+	    </manifest>
+	</jar>
+	<delete dir="${build_path}"/>
+    </target>
+</project>
