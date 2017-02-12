@@ -72,7 +72,7 @@ public class Network3 {
             ThreadPool.createNew(() -> {
                 try { Thread.sleep(delay); } catch (InterruptedException e) {}
                 nodeRunners[dest].receiveMessage(msg);
-            }, "Sender 6");
+            }, "Sender 3");
         }
     }
     
@@ -118,7 +118,7 @@ public class Network3 {
                 }
                 
             }
-        }, "PassiveRegister6");
+        }, "PassiveRegister3");
     }
     
     public void registerPassive(int node){
@@ -140,7 +140,7 @@ public class Network3 {
     public void sendFirstProbeMessage(int i, ProbeMessage3 token) {
         ThreadPool.createNew(() -> {
             probers[i].receiveFirstMessage(token);
-        }, "ProbeSender6");
+        }, "ProbeSender3");
         
     }
 
@@ -149,7 +149,7 @@ public class Network3 {
             int delay = random.nextInt(50);
             try { Thread.sleep(delay); } catch(InterruptedException e) {}
             probers[dest].receiveMessage(token);
-        }, "ProbeSender6");
+        }, "ProbeSender3");
     }
 
 

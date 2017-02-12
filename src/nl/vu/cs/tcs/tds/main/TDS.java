@@ -90,24 +90,6 @@ public class TDS {
     	PropertyConfigurator.configure(log4jConfPath);
     }
     
-//    public synchronized void waitTillDone(long limit){
-//    	while(!done){
-//    		try{
-//    			ThreadPool.createNew(() -> {
-//    				try {
-//						Thread.sleep(limit);
-//					} catch (Exception e) {
-//						//ignore
-//					}
-//    				TDS.writeString(0, "NO TERMINATION DETECTED IN " + limit + " ms" );
-//    				TDS.instance().announce(0);
-//    			}, "TimeoutCount");
-//    			wait();
-//    		}catch (InterruptedException e){
-//    			TDS.writeString(0, "DONE!");
-//    		}
-//    	}
-//    }
     
     public void announce(int version){
     	if(version == 1)
@@ -135,7 +117,6 @@ public class TDS {
 					break;
 				}
     		}
-    		
     	}
     }
     
@@ -155,24 +136,21 @@ public class TDS {
             
             if(versionString.contains("1")){
                 tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-                tds.add(tds1);
                 done[0] = false;
+                new Thread(tds1).start();
             }
             
             if(versionString.contains("2")){
                 tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-                tds.add(tds2);
                 done[1] = false;
+                new Thread(tds2).start();
             }
             
             if(versionString.contains("3") ){
                 tds3 = new TDSFaultTolerant(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
-                tds.add(tds3);
                 done[2] = false;
+                new Thread(tds3).start();
             }
-            
-            for(Runnable r: tds)
-                new Thread(r).start();
     	}
 
 

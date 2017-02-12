@@ -35,12 +35,13 @@ public class TDSFaultTolerant implements Runnable{
                     try{
                         Thread.sleep(maxWait);
                     }catch(Exception e){
-                        System.out.println("YES!");
+                        
                     }
-                    PerformanceLogger.instance().timeout(3);
+                    
                     TDS.writeString(-1, " [FTS]\tNO TERMINATION DETECTED IN " + maxWait + " ms" );
                     this.setDone();
-                }, "TimeoutCount6");
+                    PerformanceLogger.instance().timeout(3);
+                }, "TimeoutCount3");
                 wait();
             }catch(InterruptedException e){}
         }

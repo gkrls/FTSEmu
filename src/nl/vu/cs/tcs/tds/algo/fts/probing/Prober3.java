@@ -91,7 +91,7 @@ public class Prober3 {
                 
                 long end = System.nanoTime();
                 PerformanceLogger.instance().addProcTime(3, end - start);
-                TDS.instance().announce(3); //add 6 in TDS.instance
+                TDS.instance().announce(3); 
                 return;
             }else {
                 writeString("No Term: " + sum);

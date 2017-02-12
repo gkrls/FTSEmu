@@ -115,38 +115,45 @@ public class PerformanceLogger {
 	
 	
 	public synchronized void writeToCSV() throws IOException {
+	    File folder = new File("csv/");
+
 	    File f = new File("csv/"+CSV_FILE);
-	    //f.getParentFile().mkdirs();
-	    String s = tds1.getTotalTokens() + "#" + tds1.getExtraTokens() + "#" + tds1.meanProcTime() + "#" + tds1.meanTokenBitComplexity() + "#" + "" + "#"
-	             + tds2.getTotalTokens() + "#" + tds2.getExtraTokens() + "#" + tds2.meanProcTime() + "#" + tds2.meanTokenBitComplexity() + "#" + "" + "#"
-	             + tds3.getTotalTokens() + "#" + tds3.getExtraTokens() + "#" + tds3.meanProcTime() + "#" + tds3.meanTokenBitComplexity() + "#" + ""+tds3.getTotalBackupTokens() + "#" + tds3.getExtraBackupTokens() + "#" + tds3.hasTimedOut();
-	    CSVWriter writer = new CSVWriter(new FileWriter(f, true), '\t');
+        if(!folder.exists()){
+          folder.mkdirs();    
+        }
+        String s = tds1.getTotalTokens() + "#" + tds1.getExtraTokens() + "#" + tds1.meanProcTime()  + "#" + "" + "#"
+                 + tds2.getTotalTokens() + "#" + tds2.getExtraTokens() + "#" + tds2.meanProcTime()  + "#" + "" + "#"
+                 + tds3.getTotalTokens() + "#" + tds3.getExtraTokens() + "#" + tds3.meanProcTime()  + "#" + tds3.getTotalBackupTokens() + "#" + tds3.hasTimedOut();
+
 	    if(!f.exists()) {
-	        f.getParentFile().mkdirs();
-	        System.out.println("HERE!");
-	        String[] titles = {"OS MTC", "OS METC", "OS MPT", "OS MBC", "",
-	                            "IS MTC", "IS METC", "IS MPT", "IS MBC", "",
-	                            "FT MTC", "FT METC", "FT MPT", "FT MBC", "FT MBTC", "FT MEBTC", "TIMEOUT"};
+	        CSVWriter writer = new CSVWriter(new FileWriter(f, true), '\t');
+	        String[] titles = { "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
+	                            "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
+	                            "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
 	        writer.writeNext(titles);
 	        writer.writeNext(s.split("#"));
+	        writer.close();
 	    } else {
-	        System.out.println("HERE!!!");
+	        CSVWriter writer = new CSVWriter(new FileWriter(f, true), '\t');
 	        writer.writeNext(s.split("#"));
+	        writer.close();
 	    }
-	    
-	    writer.close();
+
 	            
 	}
 	
 	public void clearCSV() throws IOException {
+	    File folder = new File("csv/");
 	    File f = new File("csv/"+CSV_FILE);
-        f.getParentFile().mkdirs();
-	    CSVWriter writer = new CSVWriter(new FileWriter(f, false), '\t');
-        String[] titles = {"OS MTC", "OS METC", "OS MPT", "OS MBC", "",
-                "IS MTC", "IS METC", "IS MPT", "IS MBC", "",
-                "FT MTC", "FT METC", "FT MPT", "FT MBC", "FT MBTC", "FT MEBTC", "TIMEOUT"};
-        writer.writeNext(titles);
-        writer.close();
+        if(folder.exists() && f.exists()){
+            CSVWriter writer = new CSVWriter(new FileWriter(f, false), '\t');
+            String[] titles = { "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
+                                "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
+                                "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
+            writer.writeNext(titles);
+            writer.close();
+        }
+
 	}
 	
 

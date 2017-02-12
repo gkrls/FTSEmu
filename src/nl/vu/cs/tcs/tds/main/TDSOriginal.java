@@ -48,8 +48,8 @@ public class TDSOriginal implements Runnable {
 
 		for(int i = 0; i < nnodes; i++)
 			nodeRunners[i] = new NodeRunner1(i, nnodes, network, i == 0);
+		
 		network.waitForAllNodes();
-
 		waitTillDone();
 		network.killNodes();
 		TDS.instance().setDone(1);

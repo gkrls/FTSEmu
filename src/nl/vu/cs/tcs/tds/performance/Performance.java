@@ -40,7 +40,6 @@ public class Performance {
 	
 	public synchronized void incTokens(){
 		totalTokens++;
-		//System.out.println(totalTokens);
 	}
 	
 	public void timeout() {
