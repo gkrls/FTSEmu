@@ -3,8 +3,8 @@ A Distributed System Simulator for a single node. It has been developed as a pla
 
 More: TBA
 
-Ref:
-[1] https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF
+Ref:<br/>
+[1] https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF<br/>
 [2] http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.22.4105&rep=rep1&type=pdf
 
 
