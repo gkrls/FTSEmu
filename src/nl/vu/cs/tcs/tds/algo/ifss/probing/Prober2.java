@@ -69,7 +69,7 @@ public class Prober2{
         if((token.getCount() == 0) && (nodeRunner.getBlack() == nodeRunner.getId())){
         //if(token.getCount() == 0 && state.getBlack() == mynode){
             writeString("TERMINATION DETECTED");
-            writeString("PROBER 5: Termination detected "
+            writeString("Termination detected "
                     + (System.currentTimeMillis() - network.getLastPassive())
                     + " milliseconds after last node became passive.");
             

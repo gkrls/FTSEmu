@@ -33,6 +33,10 @@ $ java -jar TDS-0.1.jar [OPTION]...
  -f	    | flush the csv file                             |    -                                                    |off      |
  -log	    | Log ouput in files    (N/A yet)                |    -                                                    |off      |
 
+# Verbose Output
+This is a typical output when running with option **-v** and default **-ver**
+
+![alt tag] (https://lh6.googleusercontent.com/vnY-Mqn2f3UozLzmyicIE3uYW60rZFuFD2dB9MTrBq-RHX34toqVWLWeSvwuyEseKDnz2m2YYTci70Q=w1902-h852-rw)
 
 # Issues
 [1] There is currently a bug introduced after the migration. When all version run at the same time, occasionally, one will hang with no activity taking place for that version.  

@@ -37,7 +37,7 @@ public class Prober1 {
 		if(nodeRunner.getId() == totalNodes - 1){
 			if(probeMessage.consistentSnapshot(nodeRunner)){
 				writeString("TERMINATION DETECTED");
-	            writeString("PROBER 1: Termination detected "
+	            writeString("Termination detected "
 	                    + (System.currentTimeMillis() - network.getLastPassive())
 	                    + " milliseconds after last node became passive.");
 	            long end = System.nanoTime();
