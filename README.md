@@ -1,5 +1,12 @@
 # TDS
-Termination Detection Simulator
+A Distributed System Simulator for a single node. It has been developed as a platform for analyzing and benchmarking a novel approach on Fault-Tolerant Termination Detection based on an optimized  version of Safra's Termination Detection algorithm. 
+
+More: TBA
+
+Ref:
+[1] https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF
+[2] http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.22.4105&rep=rep1&type=pdf
+
 
 # Usage 
  - Build
