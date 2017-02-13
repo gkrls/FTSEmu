@@ -39,4 +39,4 @@ This is a typical output when running with option **-v** and default **-ver**
 ![simulator screenshot] (http://i.imgur.com/OaIwYsN.png)
 
 # Issues
-[1] There is currently a bug introduced after the migration. When all version run at the same time, occasionally, one will hang with no activity taking place for that version.  
+[1] There is currently a bug introduced after the migration. When all versions run at the same time, occasionally, one will hang with no activity taking place for that version.  
