@@ -36,7 +36,10 @@ $ java -jar TDS-0.1.jar [OPTION]...
 # Verbose Output
 This is a typical output when running with option **-v** and default **-ver**
 
-![simulator screenshot] (http://i.imgur.com/OaIwYsN.png)
+
+<p align="center">
+  <img src="http://i.imgur.com/OaIwYsN.png" alt="simulator screenshot"/>
+</p>
 
 # Issues
 [1] There is currently a bug introduced after the migration. When all versions run at the same time, occasionally, one will hang with no activity taking place for that version.  
