@@ -24,6 +24,9 @@ public class NodeCrasher {
         this.nnodes = nnodes;
         numCrashedNodes = Options.instance().get(Options.CRASHED_NODES);
         this.crashedNodes = new int[numCrashedNodes];
+				for (int i = 0; i < numCrashedNodes; i++) {
+					crashedNodes[i] = -1;
+				}
         this.random = new Random();
     }
     
