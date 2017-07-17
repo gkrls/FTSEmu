@@ -15,11 +15,15 @@ public class Options {
 	public static final int FLUSH_CSV = -8;
 	public static final int VERSION = -9;
 	public static final int CRASHED_NODES = -10;
+	public static final int PROB_DISTRIBUTION = -11;
+	
+	public static final int PROB_DISTRIBUTION_UNIFORM = 1;
+	public static final int PROB_DISTRIBUTION_GAUSSIAN = 2;
 	
 	public static final int DEFAULT_NUM_OF_NODES = 4;
 	public static final int MAXIMUM_NUM_OF_NODES = 1024;
-	public static final int DEFAULT_ACTIVITY_LEVEL = 2;
-	public static final int MAXIMUM_ACTIVITY_LEVEL = 4;
+	public static final int DEFAULT_ACTIVITY_LEVEL = 1;
+	public static final int MAXIMUM_ACTIVITY_LEVEL = 2;
 	public static final int DEFAULT_MAX_WAIT = 100000;
 	public static final int DEFAULT_LOG = 0;
 	public static final int DEFAULT_VERBOSE = 0;
@@ -29,10 +33,13 @@ public class Options {
 	public static final int DEFAULT_VERSION = 0;
 	private static final int[] ALLOWED_VERSIONS = {1,2,3, 12, 13, 21, 31, 23, 32, 123, 132, 213, 231, 312, 321};
 	public static final int DEFAULT_CRUSHED_NODES = 0;
+	public static final int DEFAULT_PROB_DISTRIBUTION = PROB_DISTRIBUTION_UNIFORM;
 	
 	
 	
-	private ArrayList<Option> opts; 
+	
+	
+	private static ArrayList<Option> opts; 
 	private Options(){init();}
 	public static Options instance = new Options();
 	
@@ -48,14 +55,15 @@ public class Options {
 		opts.add(new Option(Options.FLUSH_CSV, "-f", false, DEFAULT_CSV_FLUSH));
 		opts.add(new Option(Options.VERSION, "-ver", true, DEFAULT_VERSION));
 		opts.add(new Option(Options.CRASHED_NODES, "-c", true, DEFAULT_CRUSHED_NODES));
+		opts.add(new Option(Options.PROB_DISTRIBUTION, "-dist", false, DEFAULT_PROB_DISTRIBUTION));
 	}
 	
 	public static Options instance(){
 		return instance;
 	}
 	
-	public void printOptions(){
-		for(Option opt: this.opts)
+	public static  void printOptions(){
+		for(Option opt: opts)
 			System.out.println(opt.toString());
 	}
 	
@@ -105,6 +113,12 @@ public class Options {
 		    }
 		        
 		}
+		if(option == Options.PROB_DISTRIBUTION) {
+		    if(value != Options.PROB_DISTRIBUTION_GAUSSIAN && value != Options.PROB_DISTRIBUTION_UNIFORM) {
+		        System.out.println("Use 1 (Uniform) or 2(Gaussian) distribution.");
+		        System.exit(1);
+		    }
+		}
 		
 	}
 	
@@ -142,6 +156,9 @@ public class Options {
 		if(option == Options.CRASHED_NODES){
 		    getOptByName("-c").setValue(value);
 		}
+		if(option == Options.PROB_DISTRIBUTION) {
+		    getOptByName("-dist").setValue(value);
+		}
 		
 	}
 	
@@ -166,6 +183,8 @@ public class Options {
 			return Options.VERSION;
 		if(opt.equals("-c"))
 		    return Options.CRASHED_NODES;
+		if(opt.equals("-dist"))
+		    return Options.PROB_DISTRIBUTION;
 		throw new IllegalArgumentException("Invalid option: '" + opt + "'");	
 	}
 
@@ -238,10 +257,20 @@ public class Options {
 				    }
 				    i++;
 				    break;
+				case Options.PROB_DISTRIBUTION:
+				    try {
+				        this.setOption(Options.PROB_DISTRIBUTION, Integer.parseInt(args[i+1]));
+				    }catch(Exception e) {
+				        System.out.println("Invalid value for '-dist'");
+				        System.exit(1);
+				    }
+				    i++;
+				    break;
 			}
 			
 		}
 	}
+	
 	
 	private void printUsage(){
 		System.out.println("USAGE: Todo!!!");

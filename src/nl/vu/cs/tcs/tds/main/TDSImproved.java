@@ -1,6 +1,7 @@
 package main;
 
 import ibis.util.ThreadPool;
+import util.Options;
 import algo.ifss.network.Network2;
 import algo.ifss.node.NodeRunner2;
 
@@ -45,9 +46,9 @@ public class TDSImproved implements Runnable{
     public void run() {
         for ( int i = 0; i < nnodes; i++ ) {
             // Here choose who starts as active
-            nodeRunners[i] = new NodeRunner2(i, nnodes, network, i % 2 == 0 || i % 5 == 0); 
+            nodeRunners[i] = new NodeRunner2(i, nnodes, network, i == 0); 
         }
-        
+        Options.printOptions();
         network.waitForAllNodes();
         waitTillDone();
         network.killNodes();

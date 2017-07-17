@@ -113,15 +113,51 @@ public class NodeRunner2 implements Runnable{
     private void activity() {
         writeString("starting activity");
         int level = Options.instance().get(Options.ACTIVITY_LEVEL);
-        int nActivities = 1 + random.nextInt(level);
+        int nActivities = level;
+        if(Options.instance().get(Options.PROB_DISTRIBUTION) == Options.PROB_DISTRIBUTION_UNIFORM) {
+            /* uniform distribution in the interval [1-4]*/
+            nActivities *= 1 + random.nextInt(4);
+        } else {
+            /* gaussian distribution in the interval [1-4] mean=2.5 sd=1*/
+            int val;
+            do {
+                val = (int) Math.round(random.nextGaussian() + 2.5);
+            }while(val <= 0); //discard negative values
+            
+            nActivities *= val;
+            
+        }
+        
         for(int i = 0; i < nActivities; i++) {
-            int timeToSleep = random.nextInt(1000); //computation lol
-            try { Thread.sleep(timeToSleep); } catch(InterruptedException e) {}
-            
-            int nMessages = random.nextInt(level) + (this.mynode == 0? 1 : 0);
-            
-            for (int j = 0; j < nMessages; j++)
+            boolean compute = random.nextGaussian() > 0;
+            if (compute) {
+                //perform computation
+                int timeToSleep;
+                if(Options.instance().get(Options.PROB_DISTRIBUTION) == Options.PROB_DISTRIBUTION_UNIFORM) {
+                    /* uniform distribution in the interval [0-1000]*/
+                    timeToSleep = random.nextInt(1000); //computation lol
+                } else {
+                    /* gaussian distribution in the interval [1-4]*/
+                    int val;
+                    do {
+                        val = (int) Math.round(random.nextGaussian() * 100 + 500);
+                    }while(val <= 0); //discard negative values
+                    timeToSleep = val;
+                }
+                
+                try { Thread.sleep(timeToSleep); } catch(InterruptedException e) {}
+            } else {
+                //send a message
                 sendMessage(network.selectTarget(mynode));
+            }
+
+            
+            
+            
+//            int nMessages = random.nextInt(level) + (this.mynode == 0? 1 : 0);
+//            
+//            for (int j = 0; j < nMessages; j++)
+//                sendMessage(network.selectTarget(mynode));
         }
     }
     
