@@ -10,13 +10,14 @@ import algo.ifss.probing.*;
 import algo.fts.probing.*;
 
 import com.opencsv.CSVWriter;
-
+import static util.Options.*;
 
 
 
 public class PerformanceLogger {
+	private static String fileVersionString = "";
 	
-	private static final String CSV_FILE = Options.instance().get(Options.NUM_OF_NODES)+"_"+Options.instance().get(Options.CRASHED_NODES)+".csv";
+	private static String CSV_FILE;
 	
 	private Performance  tds1, tds2, tds3;
 	private int tokenCycles;
@@ -34,6 +35,22 @@ public class PerformanceLogger {
 		tds2 = new Performance(2);
 		tds3 = new Performance(3);
 		//nodesReceivingToken.add(Options.DEFAULT_NUM_OF_NODES - 1); //Add first initiator. Has to be fixed when Options is finished
+		
+		if (Options.instance().get(Options.VERSION) == 0) {
+		    fileVersionString = "O,I,FT";
+		} else {
+		    String versionString = String.valueOf(Options.instance().get(VERSION));
+		    if (versionString.contains("1")) fileVersionString += "O,";
+		    if (versionString.contains("2")) fileVersionString += "I,";
+		    if (versionString.contains("3")) fileVersionString += "FT,";
+		    fileVersionString = fileVersionString.substring(0, fileVersionString.length() - 1);
+		}
+		CSV_FILE = "[ " + fileVersionString + " ]" + "__" +
+	            Options.instance().get(NUM_OF_NODES) + "-" +
+	            Options.instance().get(CRASHED_NODES)+ "__" +
+	            (Options.instance().get(ACTIVITY_STRATEGY) == ACTIVITY_STRATEGY_COMPUTE_SEND? "compute-send": "n-activities") + "__" +
+	            (Options.instance().get(PROB_DISTRIBUTION) == PROB_DISTRIBUTION_UNIFORM? "uniform": "gaussian") + ".csv";
+	
 	}
 	
 	public static PerformanceLogger instance(){
