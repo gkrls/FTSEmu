@@ -1,19 +1,5 @@
 package algo.ofss.node;
 
-import static util.Options.ACTIVITY_LEVEL;
-import static util.Options.ACTIVITY_STRATEGY_COMPUTE_SEND;
-import static util.Options.ACTIVITY_STRATEGY_N_ACTIVITIES;
-import static util.Options.GAUSSIAN_COMPUTE_MU;
-import static util.Options.GAUSSIAN_COMPUTE_SD;
-import static util.Options.GAUSSIAN_MESSAGES_MU;
-import static util.Options.GAUSSIAN_MESSAGES_SD;
-import static util.Options.PROB_DISTRIBUTION;
-import static util.Options.PROB_DISTRIBUTION_UNIFORM;
-import static util.Options.UNIFORM_COMPUTE_MAX;
-import static util.Options.UNIFORM_COMPUTE_MIN;
-import static util.Options.UNIFORM_MESSAGES_MAX;
-import static util.Options.UNIFORM_MESSAGES_MIN;
-
 import java.util.Random;
 
 import util.Options;
@@ -22,6 +8,8 @@ import performance.PerformanceLogger;
 import algo.ofss.network.Network1;
 import algo.ofss.probing.Prober1;
 import util.Color;
+
+import static util.Options.*;
 
 // A NodeRunner thread simulates a node that is doing some computation,
 // is sending some messages, or is passive.
@@ -119,15 +107,21 @@ public class NodeRunner1 implements Runnable {
 
             }
             writeString("becoming active");
-            activity();
+            
+            activity(Options.instance().get(ACTIVITY_STRATEGY));
+            
             prober.nodeRunnerStopped();
+            
             synchronized(this){
             	//not removing it yet. Have to check if isPassive is checked somewhere!!
             	isPassive = true;
             	notifyAll();
             }
+            
             state.setPassive(true);
+            
             writeString("becoming passive");
+            
             network.registerPassive();
         }
     }
@@ -257,39 +251,39 @@ public class NodeRunner1 implements Runnable {
     }
     
 
-    private void activity() {
-        // Create some random number of activities which either
-        // simulate the sending of a number of messages,
-        // or doing some computation (a sleep :-)
-        // This is just an example. Modify to your own taste.
-
-        writeString("starting activity");
-//        Activity activity = ActivityGenerator.instance().getNext(1, this.getId());
-//        int nActivities = activity.getNumActivities();
-        int level = Options.instance().get(Options.ACTIVITY_LEVEL);
-        int nActivities = 1 + random.nextInt(level);
-        for (int i = 0; i < nActivities; i++) {
-            // Start with some computation
-            int timeToSleep = random.nextInt(1000);
-            // Sleep between 0 and 1000 milliseconds
-            try {
-                Thread.sleep(timeToSleep);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-            //Then, send a couple of messages. Maybe 0, or else it never stops...
-            //Make sure Node 0 sends at least 1 message, to avoid zero activity
-            //int nMessages = activity.getNumMessages() + (this.mynode == 0? 1:0);
-            int nMessages = random.nextInt(level) + (this.mynode == 0? 1:0);
-            //int[] targets = activity.getTargets();
-            
-            for (int j = 0; j < nMessages; j++) {
-               int target = network.selectTargetUniform(mynode);
-               sendMessage(target);
-            }
-        }
-
-    }
+//    private void activity() {
+//        // Create some random number of activities which either
+//        // simulate the sending of a number of messages,
+//        // or doing some computation (a sleep :-)
+//        // This is just an example. Modify to your own taste.
+//
+//        writeString("starting activity");
+////        Activity activity = ActivityGenerator.instance().getNext(1, this.getId());
+////        int nActivities = activity.getNumActivities();
+//        int level = Options.instance().get(Options.ACTIVITY_LEVEL);
+//        int nActivities = 1 + random.nextInt(level);
+//        for (int i = 0; i < nActivities; i++) {
+//            // Start with some computation
+//            int timeToSleep = random.nextInt(1000);
+//            // Sleep between 0 and 1000 milliseconds
+//            try {
+//                Thread.sleep(timeToSleep);
+//            } catch (InterruptedException e) {
+//                // ignore
+//            }
+//            //Then, send a couple of messages. Maybe 0, or else it never stops...
+//            //Make sure Node 0 sends at least 1 message, to avoid zero activity
+//            //int nMessages = activity.getNumMessages() + (this.mynode == 0? 1:0);
+//            int nMessages = random.nextInt(level) + (this.mynode == 0? 1:0);
+//            //int[] targets = activity.getTargets();
+//            
+//            for (int j = 0; j < nMessages; j++) {
+//               int target = network.selectTargetUniform(mynode);
+//               sendMessage(target);
+//            }
+//        }
+//
+//    }
 
     private synchronized boolean shouldStop() {
         return mustStop;
