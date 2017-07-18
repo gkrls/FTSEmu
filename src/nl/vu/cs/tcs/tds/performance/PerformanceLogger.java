@@ -53,28 +53,25 @@ public class PerformanceLogger {
 	
 	}
 	
-	public static PerformanceLogger instance(){
-		return instance;
-	}
+	public static PerformanceLogger instance(){ return instance; }
 	
-	public void timeout(int version){
-        switch(version){
+	public void timeout(int version) {
+	    switch(version){
             case 1: tds1.timeout(); break;
             case 2: tds2.timeout(); break;
             case 3: tds3.timeout(); break;
             default: break;
         }
-    }
-	
-	public void incTokens(int version){
-		switch(version){
-			case 1: tds1.incTokens(); break;
-			case 2: tds2.incTokens(); break;
-			case 3: tds3.incTokens(); break;
-			default: break;
-		}
 	}
 	
+	public void incTokens(int version){
+	    switch(version){
+    	    case 1: tds1.incTokens(); break;
+    	    case 2: tds2.incTokens(); break;
+    	    case 3: tds3.incTokens(); break;
+    	    default: break;
+	    }
+	}
 	
 	public int getTokens(int version){
 		switch(version){
@@ -94,9 +91,9 @@ public class PerformanceLogger {
 		}
 	}
 	
-    public synchronized void setBackupTokensUpToTerm(int version) {
-        switch(version) {
-            case 3: tds3.setBackupTokensUpToTerm(); break;
+	public synchronized void setBackupTokensUpToTerm(int version) {
+	    switch(version) {
+	        case 3: tds3.setBackupTokensUpToTerm(); break;
             default: return;
         }
     }
@@ -113,69 +110,59 @@ public class PerformanceLogger {
         }
     }
 	
-	
 	public synchronized void addProcTime(int version, long time){
-	       switch(version) {
-               case 1: tds1.addProcTime(time); break;
-               case 2: tds2.addProcTime(time); break;
-               case 3: tds3.addProcTime(time); break;
-               default: return;
-	       }
+	    switch(version) {
+	        case 1: tds1.addProcTime(time); break;
+	        case 2: tds2.addProcTime(time); break;
+	        case 3: tds3.addProcTime(time); break;
+	        default: return;
+	    }
 	}
 	
-	public synchronized void incBackupTokens(int version){
+    public synchronized void incBackupTokens(int version){
         switch(version) {
             case 3: tds3.incBackupTokens(); break; // This line was case 4: tds5.incBackupTokens(); break;
             default: return;
         }
-	}
+    }
 	
 	
-	public synchronized void writeToCSV() throws IOException {
-	    File folder = new File("csv/");
-
-	    File f = new File("csv/"+CSV_FILE);
-        if(!folder.exists()){
-          folder.mkdirs();    
-        }
+    public synchronized void writeToCSV() throws IOException {
+        File folder = new File("csv/");
+        
+        File f = new File("csv/"+CSV_FILE);
+        
+        if(!folder.exists()){ folder.mkdirs(); }
+        
         String s = tds1.getTotalTokens() + "#" + tds1.getExtraTokens() + "#" + tds1.meanProcTime()  + "#" + "" + "#"
                  + tds2.getTotalTokens() + "#" + tds2.getExtraTokens() + "#" + tds2.meanProcTime()  + "#" + "" + "#"
                  + tds3.getTotalTokens() + "#" + tds3.getExtraTokens() + "#" + tds3.meanProcTime()  + "#" + tds3.getTotalBackupTokens() + "#" + tds3.hasTimedOut();
 
-	    if(!f.exists()) {
-	        CSVWriter writer = new CSVWriter(new FileWriter(f, true), '\t');
-	        String[] titles = { "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
+        if(!f.exists()) {
+            CSVWriter writer = new CSVWriter(new FileWriter(f, true), '\t');
+            String[] titles = { "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
 	                            "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
 	                            "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
-	        writer.writeNext(titles);
-	        writer.writeNext(s.split("#"));
-	        writer.close();
-	    } else {
-	        CSVWriter writer = new CSVWriter(new FileWriter(f, true), '\t');
-	        writer.writeNext(s.split("#"));
-	        writer.close();
-	    }
-
-	            
+            writer.writeNext(titles);
+            writer.writeNext(s.split("#"));
+            writer.close();
+        } else {
+            CSVWriter writer = new CSVWriter(new FileWriter(f, true), '\t');
+            writer.writeNext(s.split("#"));
+            writer.close();
+        }
 	}
 	
 	public void clearCSV() throws IOException {
 	    File folder = new File("csv/");
 	    File f = new File("csv/"+CSV_FILE);
-        if(folder.exists() && f.exists()){
-            CSVWriter writer = new CSVWriter(new FileWriter(f, false), '\t');
-            String[] titles = { "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
+	    if (folder.exists() && f.exists()) {
+	        CSVWriter writer = new CSVWriter(new FileWriter(f, false), '\t');
+	        String[] titles = { "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
                                 "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
                                 "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
-            writer.writeNext(titles);
-            writer.close();
-        }
-
+	        writer.writeNext(titles);
+	        writer.close();
+	    }
 	}
-	
-
-
-
-	
-
 }
