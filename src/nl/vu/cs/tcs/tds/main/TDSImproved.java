@@ -48,7 +48,7 @@ public class TDSImproved implements Runnable{
             // Here choose who starts as active
             nodeRunners[i] = new NodeRunner2(i, nnodes, network, i == 0); 
         }
-        Options.printOptions();
+        //Options.printOptions();
         network.waitForAllNodes();
         waitTillDone();
         network.killNodes();

@@ -84,15 +84,38 @@ public class Network2 {
         }, "ProbeSender5");
     }
     
-    public int selectTarget(int mynode) {
+    public int selectTargetUniform(int mynode) {
         if(nnodes == 1) {
             System.out.println("WARNING: nnodes = 1, node 0 about to send msg to itself!");
             return mynode;
         }
         
-        for(;;){
+        for (;;) {
             int dest = random.nextInt(nnodes);
             if(dest != mynode) return dest;
+        }
+    }
+    
+    public int selectTargetGaussian(int mynode){
+        if(nnodes == 1) {
+            System.out.println("WARNING: nnodes = 1, node 0 about to send msg to itself!");
+            return mynode;
+        }
+        
+        int dest = -1;
+        
+        
+        for (;;) {
+            /* pick a candidate */
+            dest = random.nextInt(nnodes);
+            
+            /* make sure it's not us */
+            while (dest == mynode)
+                dest = random.nextInt(nnodes);
+            
+            /* decide if destination */
+            if ( random.nextGaussian() >= 0)
+                return dest;
         }
     }
     

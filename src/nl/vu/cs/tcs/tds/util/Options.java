@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.stream.IntStream;
 
 public class Options {
+    
+    public static final int OPTION_ERR = -12345;
 	
 	public static final int NUM_OF_NODES = -1;
 	public static final int LOG = -2;
@@ -16,9 +18,15 @@ public class Options {
 	public static final int VERSION = -9;
 	public static final int CRASHED_NODES = -10;
 	public static final int PROB_DISTRIBUTION = -11;
+	public static final int ACTIVITY_STRATEGY = -12;
 	
 	public static final int PROB_DISTRIBUTION_UNIFORM = 1;
 	public static final int PROB_DISTRIBUTION_GAUSSIAN = 2;
+	
+	public static final int ACTIVITY_STRATEGY_COMPUTE_SEND = 1;
+	public static final int ACTIVITY_STRATEGY_N_ACTIVITIES = 2;
+	
+	
 	
 	public static final int DEFAULT_NUM_OF_NODES = 4;
 	public static final int MAXIMUM_NUM_OF_NODES = 1024;
@@ -34,6 +42,21 @@ public class Options {
 	private static final int[] ALLOWED_VERSIONS = {1,2,3, 12, 13, 21, 31, 23, 32, 123, 132, 213, 231, 312, 321};
 	public static final int DEFAULT_CRUSHED_NODES = 0;
 	public static final int DEFAULT_PROB_DISTRIBUTION = PROB_DISTRIBUTION_UNIFORM;
+	public static final int DEFAULT_ACTIVITY_STRATEGY = ACTIVITY_STRATEGY_COMPUTE_SEND;
+	
+	
+	
+	/** The following options are not user definable (for now)! **/
+	public static final int UNIFORM_COMPUTE_MAX = 2000;
+	public static final int UNIFORM_COMPUTE_MIN = 1;
+	public static final int UNIFORM_MESSAGES_MAX = 3;
+	public static final int UNIFORM_MESSAGES_MIN = 0;
+	
+	public static final int GAUSSIAN_COMPUTE_MU = 1000;
+	public static final int GAUSSIAN_COMPUTE_SD = 200;
+	public static final int GAUSSIAN_MESSAGES_MU = 1;
+	public static final int GAUSSIAN_MESSAGES_SD = 1;
+	/*************************************************************/
 	
 	
 	
@@ -41,7 +64,7 @@ public class Options {
 	
 	private static ArrayList<Option> opts; 
 	private Options(){init();}
-	public static Options instance = new Options();
+	private static Options instance = new Options();
 	
 	public void init(){
 		opts = new ArrayList<Option>();
@@ -56,6 +79,7 @@ public class Options {
 		opts.add(new Option(Options.VERSION, "-ver", true, DEFAULT_VERSION));
 		opts.add(new Option(Options.CRASHED_NODES, "-c", true, DEFAULT_CRUSHED_NODES));
 		opts.add(new Option(Options.PROB_DISTRIBUTION, "-dist", false, DEFAULT_PROB_DISTRIBUTION));
+		opts.add(new Option(Options.ACTIVITY_STRATEGY, "-strategy", false, DEFAULT_ACTIVITY_STRATEGY));
 	}
 	
 	public static Options instance(){
@@ -71,7 +95,7 @@ public class Options {
 		for(Option opt: opts)
 			if(opt.getId() == option)
 				return opt.value();
-		return -10;
+		return OPTION_ERR;
 	}
 	
 	private Option getOptByName(String name){
@@ -119,6 +143,12 @@ public class Options {
 		        System.exit(1);
 		    }
 		}
+		if(option == Options.ACTIVITY_STRATEGY) {
+		    if(value != Options.ACTIVITY_STRATEGY_N_ACTIVITIES && value != Options.ACTIVITY_STRATEGY_COMPUTE_SEND) {
+		        System.out.println("Use 1 (sleep-send) or 2 (n activities) for activity strategy");
+		        System.exit(1);
+		    }
+		}
 		
 	}
 	
@@ -159,6 +189,9 @@ public class Options {
 		if(option == Options.PROB_DISTRIBUTION) {
 		    getOptByName("-dist").setValue(value);
 		}
+		if(option == Options.ACTIVITY_STRATEGY) {
+		    getOptByName("-strategy").setValue(value);
+		}
 		
 	}
 	
@@ -185,6 +218,8 @@ public class Options {
 		    return Options.CRASHED_NODES;
 		if(opt.equals("-dist"))
 		    return Options.PROB_DISTRIBUTION;
+		if(opt.equals("-strategy"))
+		    return Options.ACTIVITY_STRATEGY;
 		throw new IllegalArgumentException("Invalid option: '" + opt + "'");	
 	}
 
@@ -262,6 +297,15 @@ public class Options {
 				        this.setOption(Options.PROB_DISTRIBUTION, Integer.parseInt(args[i+1]));
 				    }catch(Exception e) {
 				        System.out.println("Invalid value for '-dist'");
+				        System.exit(1);
+				    }
+				    i++;
+				    break;
+				case Options.ACTIVITY_STRATEGY:
+				    try {
+				        this.setOption(Options.ACTIVITY_STRATEGY, Integer.parseInt(args[i+1]));
+				    }catch(Exception e) {
+				        System.out.println("Invalid value for '-strategy'");
 				        System.exit(1);
 				    }
 				    i++;

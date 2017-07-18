@@ -7,7 +7,14 @@ import main.TDS;
 import algo.ifss.network.Network2;
 import algo.ifss.probing.Prober2;
 
+import static util.Options.*;
+
 public class NodeRunner2 implements Runnable{
+    
+    private enum ActivityStrategy {
+        N_ACTIVITIES,
+        SLEEP_SEND
+    }
     
     private final int mynode;
     private final int nnodes;
@@ -84,7 +91,7 @@ public class NodeRunner2 implements Runnable{
     public void run() {
         writeString("Thread started");
         waitUntilStarted();
-        writeString("Cluster started");
+        writeString("Node started");
         
         while(!shouldStop()){
             synchronized(this) {
@@ -95,12 +102,17 @@ public class NodeRunner2 implements Runnable{
             }
             
             writeString("becoming active");
-            activity();
+            
+            activity(Options.instance().get(ACTIVITY_STRATEGY));
+            
             prober.nodeRunnerStopped();
             
             synchronized(this){ isPassive = true; notifyAll(); }
+            
             state.setPassive(true);
+            
             writeString("becoming passive");
+            
             network.registerPassive();
         }
     }
@@ -110,54 +122,116 @@ public class NodeRunner2 implements Runnable{
             try { wait(); } catch(InterruptedException e){break;}//maybe remove break
     }
     
-    private void activity() {
-        writeString("starting activity");
-        int level = Options.instance().get(Options.ACTIVITY_LEVEL);
-        int nActivities = level;
-        if(Options.instance().get(Options.PROB_DISTRIBUTION) == Options.PROB_DISTRIBUTION_UNIFORM) {
-            /* uniform distribution in the interval [1-4]*/
-            nActivities *= 1 + random.nextInt(4);
+    private void activity(int strategy) {
+        if ( strategy == ACTIVITY_STRATEGY_N_ACTIVITIES)
+            activityNActivities();
+        else if ( strategy == ACTIVITY_STRATEGY_COMPUTE_SEND)
+            activityComputeSend();
+        else
+            writeString("WARNING: Invalid Activity Strategy");
+    }
+    
+    private void activityNActivities() {
+        int distribution = Options.instance().get(PROB_DISTRIBUTION);
+        writeString("starting activity (" + ( distribution ==  PROB_DISTRIBUTION_UNIFORM ? "uniform)" : "gaussian)"));
+        
+        int level = 0;
+        int nActivities = 0;
+        
+        /* choose how many things to do [0 - 4] */
+        if ( distribution == PROB_DISTRIBUTION_UNIFORM) {
+            nActivities = random.nextInt(5);
         } else {
-            /* gaussian distribution in the interval [1-4] mean=2.5 sd=1*/
-            int val;
-            do {
-                val = (int) Math.round(random.nextGaussian() + 2.5);
-            }while(val <= 0); //discard negative values
-            
-            nActivities *= val;
-            
+            /* gaussian with mean=2, sd=1 */
+            nActivities = (int) Math.round(random.nextGaussian() + 2);
         }
         
-        for(int i = 0; i < nActivities; i++) {
-            boolean compute = random.nextGaussian() > 0;
-            if (compute) {
-                //perform computation
-                int timeToSleep;
-                if(Options.instance().get(Options.PROB_DISTRIBUTION) == Options.PROB_DISTRIBUTION_UNIFORM) {
-                    /* uniform distribution in the interval [0-1000]*/
-                    timeToSleep = random.nextInt(1000); //computation lol
+        while ( level++ < Options.instance().get(Options.ACTIVITY_LEVEL)) {
+            while (nActivities-- > 0) {
+                boolean compute = random.nextGaussian() > 0;
+                if (compute) {
+                    int timeToSleep;
+                    if(distribution == PROB_DISTRIBUTION_UNIFORM) {
+                        timeToSleep = random.nextInt((UNIFORM_COMPUTE_MAX/2 - UNIFORM_COMPUTE_MIN) + UNIFORM_COMPUTE_MIN);
+                    } else {
+                        
+                        do {
+                            timeToSleep = (int) Math.round(random.nextGaussian() * GAUSSIAN_COMPUTE_SD/2 + GAUSSIAN_COMPUTE_MU/2);
+                        }while(timeToSleep < 0);
+                        
+                    }
+                    
+                    try { Thread.sleep(timeToSleep);} catch (InterruptedException e) {}
                 } else {
-                    /* gaussian distribution in the interval [1-4]*/
-                    int val;
-                    do {
-                        val = (int) Math.round(random.nextGaussian() * 100 + 500);
-                    }while(val <= 0); //discard negative values
-                    timeToSleep = val;
+                    /* send one message */
+                    if(distribution == PROB_DISTRIBUTION_UNIFORM) {
+                        sendMessage(network.selectTargetUniform(mynode));
+                    } else {
+                        sendMessage(network.selectTargetGaussian(mynode));
+                    }
+                    
                 }
+            }
+        }
+    }
+    
+    /** 
+     * The following method simulates activity at a node after becoming active.
+     * The activity consists of first performing some computation and then sending
+     * a random number of messages;
+     */
+    private void activityComputeSend() {
+        int distribution = Options.instance().get(PROB_DISTRIBUTION);
+        writeString("starting activity (" + ( distribution ==  PROB_DISTRIBUTION_UNIFORM ? "uniform)" : "gaussian)"));
+        int level = 0;
+        
+        while(level++ < Options.instance().get(ACTIVITY_LEVEL)) {
+            
+            int timeToSleep = -1;
+            int numOfMessages = -1;
+            
+            if ( distribution == PROB_DISTRIBUTION_UNIFORM ) {
+
+                timeToSleep = random.nextInt((UNIFORM_COMPUTE_MAX - UNIFORM_COMPUTE_MIN) + UNIFORM_COMPUTE_MIN);
+                numOfMessages = random.nextInt((UNIFORM_MESSAGES_MAX - UNIFORM_MESSAGES_MIN) + UNIFORM_MESSAGES_MIN);
                 
-                try { Thread.sleep(timeToSleep); } catch(InterruptedException e) {}
             } else {
-                //send a message
-                sendMessage(network.selectTarget(mynode));
+                
+                /* make sure we have non-negative value */
+                while ( timeToSleep < 0 ) 
+                    timeToSleep = (int) Math.round(random.nextGaussian() * GAUSSIAN_COMPUTE_SD + GAUSSIAN_COMPUTE_MU);
+                
+                numOfMessages = (int) Math.round(random.nextGaussian() * GAUSSIAN_MESSAGES_SD + GAUSSIAN_MESSAGES_MU);
+                
+                /* make sure we have non-negative value. 
+                 * 
+                 * We are a little bit biased towards 0 messages because even if we do:
+                 * 
+                 *  while ( numOfMessages < 0 )
+                 *      numOfMessages = new_gaussian_random
+                 *  
+                 *  OR
+                 *  
+                 *  if ( numOfMessages < 0)
+                 *      numOfMessages = 1
+                 *  
+                 *  there's simply too much activity even on 64 node networks so that we don't have termination in 3 minutes!
+                 * */
+                if ( numOfMessages < 0 ) 
+                    numOfMessages = 0;
+            }
+            
+            /* 1) compute */
+            try { Thread.sleep(timeToSleep);} catch (InterruptedException e) {}
+            
+            
+            /* 2) send messages */
+            if(Options.instance().get(PROB_DISTRIBUTION) == PROB_DISTRIBUTION_UNIFORM) {
+                while( numOfMessages-- > 0 ) sendMessage(network.selectTargetUniform(mynode));
+            } else {
+                while( numOfMessages-- > 0 ) sendMessage(network.selectTargetGaussian(mynode));
             }
 
-            
-            
-            
-//            int nMessages = random.nextInt(level) + (this.mynode == 0? 1 : 0);
-//            
-//            for (int j = 0; j < nMessages; j++)
-//                sendMessage(network.selectTarget(mynode));
         }
     }
     
