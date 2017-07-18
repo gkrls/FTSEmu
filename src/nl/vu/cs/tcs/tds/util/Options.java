@@ -19,12 +19,19 @@ public class Options {
 	public static final int CRASHED_NODES = -10;
 	public static final int PROB_DISTRIBUTION = -11;
 	public static final int ACTIVITY_STRATEGY = -12;
+	public static final int BASIC_ALGO_TYPE = -13;
 	
 	public static final int PROB_DISTRIBUTION_UNIFORM = 1;
 	public static final int PROB_DISTRIBUTION_GAUSSIAN = 2;
 	
 	public static final int ACTIVITY_STRATEGY_COMPUTE_SEND = 1;
 	public static final int ACTIVITY_STRATEGY_N_ACTIVITIES = 2;
+	
+	public static final int BASIC_ALGO_CENTRALIZED = 1;
+	/* half the network (nodes with even ids) is initially active */
+	public static final int BASIC_ALGO_DECENTRALIZED_EVEN = 2;
+	/* a random number of nodes (in range 1-N) are initially active */
+	public static final int BASIC_ALGO_DECENTRALIZED_RANDOM = 3;
 	
 	
 	
@@ -43,6 +50,7 @@ public class Options {
 	public static final int DEFAULT_CRUSHED_NODES = 0;
 	public static final int DEFAULT_PROB_DISTRIBUTION = PROB_DISTRIBUTION_UNIFORM;
 	public static final int DEFAULT_ACTIVITY_STRATEGY = ACTIVITY_STRATEGY_COMPUTE_SEND;
+	public static final int DEFAULT_BASIC_ALGO_TYPE = BASIC_ALGO_DECENTRALIZED_EVEN;
 	
 	
 	
@@ -80,6 +88,7 @@ public class Options {
 		opts.add(new Option(Options.CRASHED_NODES, "-c", true, DEFAULT_CRUSHED_NODES));
 		opts.add(new Option(Options.PROB_DISTRIBUTION, "-dist", false, DEFAULT_PROB_DISTRIBUTION));
 		opts.add(new Option(Options.ACTIVITY_STRATEGY, "-strategy", false, DEFAULT_ACTIVITY_STRATEGY));
+		opts.add(new Option(Options.BASIC_ALGO_TYPE, "-batype", false, DEFAULT_BASIC_ALGO_TYPE));
 	}
 	
 	public static Options instance(){
@@ -149,6 +158,12 @@ public class Options {
 		        System.exit(1);
 		    }
 		}
+		if(option == Options.BASIC_ALGO_TYPE) {
+		    if(value != BASIC_ALGO_CENTRALIZED && value != BASIC_ALGO_DECENTRALIZED_EVEN && value != BASIC_ALGO_DECENTRALIZED_RANDOM) {
+		        System.out.println("Use 1 (centralize) or 2 (decentralized) for basic algorithm type");
+		        System.exit(1);
+		    }
+		}
 		
 	}
 	
@@ -192,6 +207,9 @@ public class Options {
 		if(option == Options.ACTIVITY_STRATEGY) {
 		    getOptByName("-strategy").setValue(value);
 		}
+		if(option == Options.BASIC_ALGO_TYPE) {
+		    getOptByName("-batype").setValue(value);
+		}
 		
 	}
 	
@@ -220,6 +238,8 @@ public class Options {
 		    return Options.PROB_DISTRIBUTION;
 		if(opt.equals("-strategy"))
 		    return Options.ACTIVITY_STRATEGY;
+		if(opt.equals("-batype"))
+		    return Options.BASIC_ALGO_TYPE;
 		throw new IllegalArgumentException("Invalid option: '" + opt + "'");	
 	}
 
@@ -310,6 +330,15 @@ public class Options {
 				    }
 				    i++;
 				    break;
+                case Options.BASIC_ALGO_TYPE:
+                    try {
+                        this.setOption(Options.BASIC_ALGO_TYPE, Integer.parseInt(args[i+1]));
+                    }catch(Exception e) {
+                        System.out.println("Invalid value for '-batype'");
+                        System.exit(1);
+                    }
+                    i++;
+                    break;
 			}
 			
 		}

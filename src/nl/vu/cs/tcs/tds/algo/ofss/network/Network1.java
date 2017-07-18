@@ -36,7 +36,7 @@ public class Network1 {
 
     public synchronized void waitForAllNodes() {
         while (nodeCount < nnodes) {
-            try {
+            try { 
                 wait();
             } catch (InterruptedException e) {
                 // ignore
@@ -72,7 +72,7 @@ public class Network1 {
                 }
                 nodeRunners[destination].receiveMessage(nodeMessage);
             }
-        }, "Sender");
+        }, "MessageSender1");
     }
 
     // To be called when termination is detected.
@@ -95,25 +95,47 @@ public class Network1 {
                 }
                 probers[destination].receiveMessage(probeMessage);
             }
-        }, "Sender");
+        }, "ProbeSender1");
     }
 
     // Find a target for a message from the specified node.
-    // Here, you could implement restrictions in the network topology.
-    public int selectTarget(int mynode) {
-        if (nnodes == 1) {
+    // Here we could implement restrictions in the network topology.
+    public int selectTargetUniform(int mynode) {
+        if(nnodes == 1) {
+            System.out.println("WARNING: nnodes = 1, node 0 about to send msg to itself!");
             return mynode;
         }
+        
         for (;;) {
             int dest = random.nextInt(nnodes);
-            if (dest != mynode) {
+            if(dest != mynode) return dest;
+        }
+    }
+    
+    public int selectTargetGaussian(int mynode){
+        if(nnodes == 1) {
+            System.out.println("WARNING: nnodes = 1, node 0 about to send msg to itself!");
+            return mynode;
+        }
+        
+        int dest = -1;
+        
+        
+        for (;;) {
+            /* pick a candidate */
+            dest = random.nextInt(nnodes);
+            
+            /* make sure it's not us */
+            while (dest == mynode)
+                dest = random.nextInt(nnodes);
+            
+            /* decide if destination */
+            if ( random.nextGaussian() >= 0)
                 return dest;
-            }
         }
     }
 
-    // When a node becomes passive, this method gets called, to register the
-    // time.
+    // When a node becomes passive, this method gets called, to register the time.
     public void registerPassive() {
     	
         ThreadPool.createNew(new Runnable() {
@@ -125,7 +147,7 @@ public class Network1 {
                 }
                 
             }
-        }, "PassiveRegister");
+        }, "PassiveRegister1");
     }
     
     public long getLastPassive(){

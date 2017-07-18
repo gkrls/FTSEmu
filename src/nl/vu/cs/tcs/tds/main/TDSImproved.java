@@ -2,8 +2,15 @@ package main;
 
 import ibis.util.ThreadPool;
 import util.Options;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.ArrayList;
+
 import algo.ifss.network.Network2;
 import algo.ifss.node.NodeRunner2;
+
+import static util.Options.*;
 
 public class TDSImproved implements Runnable{
     
@@ -44,11 +51,40 @@ public class TDSImproved implements Runnable{
     }
     
     public void run() {
-        for ( int i = 0; i < nnodes; i++ ) {
-            // Here choose who starts as active
-            nodeRunners[i] = new NodeRunner2(i, nnodes, network, i == 0); 
+        if(Options.instance().get(BASIC_ALGO_TYPE) == BASIC_ALGO_DECENTRALIZED_RANDOM) {
+            
+            Random random = new Random();
+            //choose how many to activate
+            int initiallyActiveCount = random.nextInt(nnodes);
+            ArrayList<Integer> initiallyActiveList = new ArrayList<Integer>();
+            for ( int i = 0; i < initiallyActiveCount; i++ ) {
+                Integer newActive = random.nextInt(nnodes);
+                while(initiallyActiveList.contains(newActive)) 
+                    newActive = random.nextInt(nnodes);
+                initiallyActiveList.add(newActive);
+            }
+            System.out.println("RANDOM(" + initiallyActiveCount +"): " + initiallyActiveList.toString() );
+            for ( int i = 0; i < nnodes; i++ ) {
+                // Here choose who starts as active
+                nodeRunners[i] = new NodeRunner2(i, nnodes, network, initiallyActiveList.contains(i)); 
+            }
+
+        } else if (Options.instance().get(BASIC_ALGO_TYPE) == BASIC_ALGO_DECENTRALIZED_EVEN){
+            System.out.println("EVEN");
+            for ( int i = 0; i < nnodes; i++ ) {
+                // Here choose who starts as active
+                nodeRunners[i] = new NodeRunner2(i, nnodes, network, i % 2 == 0); 
+            }
+        } else {
+            for ( int i = 0; i < nnodes; i++ ) {
+                // Here choose who starts as active
+                nodeRunners[i] = new NodeRunner2(i, nnodes, network, i == 0); 
+            }
         }
-        //Options.printOptions();
+
+
+
+        Options.printOptions();
         network.waitForAllNodes();
         waitTillDone();
         network.killNodes();
