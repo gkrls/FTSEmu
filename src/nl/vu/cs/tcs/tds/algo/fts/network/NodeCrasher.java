@@ -42,6 +42,7 @@ public class NodeCrasher {
     
     
     public void start() {
+        /** start in a new thread */
         ThreadPool.createNew(() -> {
             go();
         }, "Crasher");
@@ -64,7 +65,7 @@ public class NodeCrasher {
         
         TDS.writeString(0, " [FTS]\tWill crash " + numCrashedNodes + " nodes: " + Arrays.toString(crashedNodes));
         
-        if (Options.instance().get(CRASHED_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_UNIFORM) {
+        if (Options.instance().get(CRASHING_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_UNIFORM) {
             int delay;
             for (int crashedNode: crashedNodes) {
                 
@@ -82,7 +83,7 @@ public class NodeCrasher {
                 try {notifyNodesRandomly(crashedNode, crashedNodes); } catch (NodeCrasherStopException e) { return; }
                 
             }
-        } else if (Options.instance().get(CRASHED_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_GAUSSIAN){
+        } else if (Options.instance().get(CRASHING_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_GAUSSIAN){
             int delay;
             for (int crashedNode: crashedNodes) {
                 
@@ -103,7 +104,7 @@ public class NodeCrasher {
             
         } else { //fixed intervals
             
-            int delay = Options.instance().get(CRASHED_NODES_INTERVAL);
+            int delay = Options.instance().get(CRASHING_NODES_INTERVAL);
             
             for (int crashedNode: crashedNodes) {
                 
@@ -125,20 +126,25 @@ public class NodeCrasher {
         ThreadPool.createNew(() -> {
             try {
                 ArrayList<Integer> notified = new ArrayList<Integer>();
+                
+                /** do not try to notify the crashed nodes ! */
                 for(int n: ignoreCrashed)
                     notified.add(n);
+                
+                int notifyNext;
                 while(notified.size() != nnodes && !shouldStop()) {
-                    int notifyNext = random.nextInt(nnodes);
-                    while(notified.contains(notifyNext))
+                    notifyNext = random.nextInt(nnodes);
+                    
+                    while ( notified.contains(notifyNext) )
                         notifyNext = random.nextInt(nnodes);
+                    
                     notified.add(notifyNext);
-                    int delay = random.nextInt(1000);
-                    try { Thread.sleep(delay); } catch (InterruptedException e) {}
+                    
+                    /** this crash-message simulates that enough time elapsed without a heartbeat message 
+                     * the call will take care of waiting */
                     network.sendCrashMessage(notifyNext, crashedNode);
                 }
-            } catch (NodeCrasherStopException e) {
-                return;
-            }
+            } catch (NodeCrasherStopException e) { return; }
         }, "CrashNotifier");
         
     }

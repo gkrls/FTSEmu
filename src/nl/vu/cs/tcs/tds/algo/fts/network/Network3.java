@@ -5,6 +5,7 @@ import java.util.Random;
 
 import ibis.util.ThreadPool;
 import performance.PerformanceLogger;
+import util.Options;
 import algo.fts.node.FailureDetector;
 import algo.fts.node.NodeMessage3;
 import algo.fts.node.NodeRunner3;
@@ -24,7 +25,8 @@ public class Network3 {
     private HashSet<Integer> crashed;
     private int nodeCount;
     private Random random;
-    private boolean stopAll;
+    /* volatile maybe not needed */
+    private volatile boolean stopAll;
     private int tokenLastVisited;
     
     protected long lastPassive;
@@ -50,7 +52,7 @@ public class Network3 {
     
     public synchronized void waitForAllNodes() {
         while(nodeCount < nnodes){
-            try { wait(); } catch (InterruptedException e) {System.out.println("HERE OK");}
+            try { wait(); } catch (InterruptedException e) {}
         }
         
         for(NodeRunner3 r: nodeRunners) r.start();
@@ -80,22 +82,41 @@ public class Network3 {
             ThreadPool.createNew(() -> {
                 try { Thread.sleep(delay); } catch (InterruptedException e) {}
                 nodeRunners[dest].receiveMessage(msg);
-            }, "Sender 3");
+            }, "Sender3");
         }
     }
     
     public void sendCrashMessage(int dest, int crashedNode) throws NodeCrasherStopException {
-        if(stopAll) throw new NodeCrasherStopException();
+        
+        if(stopAll) 
+            throw new NodeCrasherStopException();
+        
         if(!crashed.contains(dest)) {
-            final int delay = random.nextInt(1000);
-            if(stopAll) throw new NodeCrasherStopException();
+            
+            if(stopAll) 
+                throw new NodeCrasherStopException();
+            
             ThreadPool.createNew(() -> {
-                try { Thread.sleep(delay); } catch (InterruptedException e){}
+                try { 
+                
+                    if(stopAll) return;
+                    
+                    Thread.sleep( Options.instance().get(CRASH_NOTIFY_INTERVAL)
+                            + Options.instance().get(AVERAGE_NETWORK_LATENCY)
+                            + random.nextInt( Options.instance().get(CRASH_NOTIFY_INTERVAL) ) ); 
+                
+                } catch (InterruptedException e){}
+                
                 if(stopAll) return;
+                
+                System.out.println("Node " + dest + " learnt crash of" + crashedNode +" !" );
                 fds[dest].receiveCrash(crashedNode);
-            }, "NodeCrasher6");
+                
+            }, "NodeCrasher3");
         }
-        if(stopAll) throw new NodeCrasherStopException();
+        
+        if(stopAll) 
+            throw new NodeCrasherStopException();
     }
     
     public int selectTargetUniform(int mynode) {
@@ -140,8 +161,7 @@ public class Network3 {
         }
     }
     
-    // When a node becomes passive, this method gets called, to register the
-    // time.
+    // When a node becomes passive, this method gets called, to register the time.
     public void registerPassive() {
         ThreadPool.createNew(new Runnable() {
             @Override
@@ -167,9 +187,6 @@ public class Network3 {
         }, "PassiveRegister3");
     }
     
-//    public void registerPassive(int node){
-//        this.crashed.add(node);
-//    }
     
     public long getLastPassive(){
         return this.lastPassive;

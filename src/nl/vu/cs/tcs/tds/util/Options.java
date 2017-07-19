@@ -20,8 +20,9 @@ public class Options {
 	public static final int PROB_DISTRIBUTION = -11;
 	public static final int ACTIVITY_STRATEGY = -12;
 	public static final int BASIC_ALGO_TYPE = -13;
-	public static final int CRASHED_NODES_INTERVAL = -14;
-	public static final int AVERAGE_NETWORK_LATENCY = -15;
+	public static final int CRASHING_NODES_INTERVAL = -14;
+	public static final int CRASH_NOTIFY_INTERVAL = -15;
+	public static final int AVERAGE_NETWORK_LATENCY = -16;
 	
 	public static final int PROB_DISTRIBUTION_UNIFORM = 1;
 	public static final int PROB_DISTRIBUTION_GAUSSIAN = 2;
@@ -93,6 +94,7 @@ public class Options {
 	public static final int DEFAULT_CRASHED_NODES_INTERVAL = CRASHING_NODES_INTERVAL_UNIFORM;
 	public static final int DEFAULT_AVERAGE_NETWORK_LATENCY = (AVERAGE_NETWORK_LATENCY_MIN + AVERAGE_NETWORK_LATENCY_MAX) / 2;
 	
+	public static final int DEFAULT_CRASH_NOTIFY_INTERVAL = 3 * AVERAGE_NETWORK_LATENCY_MAX;
 	
 	
 
@@ -120,8 +122,9 @@ public class Options {
 		opts.add(new Option(Options.PROB_DISTRIBUTION, "-dist", false, DEFAULT_PROB_DISTRIBUTION, "probability-distr"));
 		opts.add(new Option(Options.ACTIVITY_STRATEGY, "-strategy", false, DEFAULT_ACTIVITY_STRATEGY, "activity-strategy"));
 		opts.add(new Option(Options.BASIC_ALGO_TYPE, "-batype", false, DEFAULT_BASIC_ALGO_TYPE, "basic-algo-type"));
-		opts.add(new Option(Options.CRASHED_NODES_INTERVAL, "-ci", false, DEFAULT_CRASHED_NODES_INTERVAL, "crashing-nodes-interval"));
+		opts.add(new Option(Options.CRASHING_NODES_INTERVAL, "-ci", false, DEFAULT_CRASHED_NODES_INTERVAL, "crashing-nodes-interval"));
 		opts.add(new Option(Options.AVERAGE_NETWORK_LATENCY, "-anl", false, DEFAULT_AVERAGE_NETWORK_LATENCY, "average-network-latency"));
+		opts.add(new Option(Options.CRASH_NOTIFY_INTERVAL, "-cni", false, DEFAULT_CRASH_NOTIFY_INTERVAL, "crash-notify-interval"));
 	}
 	
 	public static Options instance(){
@@ -201,7 +204,7 @@ public class Options {
 		        System.exit(1);
 		    }
 		}
-		if(option == Options.CRASHED_NODES_INTERVAL) {
+		if(option == Options.CRASHING_NODES_INTERVAL) {
 		    if(value != CRASHING_NODES_INTERVAL_GAUSSIAN && value != CRASHING_NODES_INTERVAL_UNIFORM && (value < CRASHING_NODES_INTERVAL_MIN || value > CRASHING_NODES_INTERVAL_MAX)){
 	              System.out.println("Use 1 (uniform), 2 (gaussian) or " + CRASHING_NODES_INTERVAL_MIN + " <= i <= " + CRASHING_NODES_INTERVAL_MAX +"(fixed) for crashing nodes interval");
 	              System.exit(1);
@@ -259,7 +262,7 @@ public class Options {
 		if(option == Options.BASIC_ALGO_TYPE) {
 		    getOptByName("-batype").setValue(value);
 		}
-		if(option == Options.CRASHED_NODES_INTERVAL){
+		if(option == Options.CRASHING_NODES_INTERVAL){
 		    getOptByName("-ci").setValue(value);
 		}
 		if(option == Options.AVERAGE_NETWORK_LATENCY) {
@@ -296,7 +299,7 @@ public class Options {
 		if(opt.equals("-batype"))
 		    return Options.BASIC_ALGO_TYPE;
 		if(opt.equals("-ci"))
-		    return Options.CRASHED_NODES_INTERVAL;
+		    return Options.CRASHING_NODES_INTERVAL;
 		if(opt.equals("-anl"))
 		    return Options.AVERAGE_NETWORK_LATENCY;
 		throw new IllegalArgumentException("Invalid option: '" + opt + "'");	
@@ -399,9 +402,9 @@ public class Options {
                     }
                     i++;
                     break;
-                case Options.CRASHED_NODES_INTERVAL:
+                case Options.CRASHING_NODES_INTERVAL:
                     try {
-                        this.setOption(Options.CRASHED_NODES_INTERVAL,  Integer.parseInt(args[i+1]));
+                        this.setOption(Options.CRASHING_NODES_INTERVAL,  Integer.parseInt(args[i+1]));
                     } catch(Exception e) {
                         System.out.println("Invalid value for '-ci'");
                         System.exit(1);

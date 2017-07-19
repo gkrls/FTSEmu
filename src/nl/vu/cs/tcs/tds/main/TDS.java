@@ -155,13 +155,13 @@ public class TDS {
                         System.out.println("-- random-nodes-active"); break;
                 }
             } else if(opt.getName().equals("-ci")){
-                switch(Options.instance().get(CRASHED_NODES_INTERVAL)) {
+                switch(Options.instance().get(CRASHING_NODES_INTERVAL)) {
                     case CRASHING_NODES_INTERVAL_GAUSSIAN: 
                         System.out.println("-- gaussian"); break;
                     case CRASHING_NODES_INTERVAL_UNIFORM:
                         System.out.println("-- uniform"); break;
                     default:
-                        System.out.println("-- " + Options.instance().get(CRASHED_NODES_INTERVAL)); break;
+                        System.out.println("-- " + Options.instance().get(CRASHING_NODES_INTERVAL)); break;
                 }
             } else if (opt.getName().equals("-c")) {
                 if(Options.instance().get(CRASHING_NODES) == Options.CRASHING_NODES_RANDOM) {
