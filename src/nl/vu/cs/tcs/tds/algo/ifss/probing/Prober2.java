@@ -59,30 +59,28 @@ public class Prober2{
         writeString("Handling Token");
         token.incCount(nodeRunner.getState().getCount());
         
-        //writeString("new count_t= " + token.getCount());
-       
         nodeRunner.setBlack(nodeRunner.furthest(nodeRunner.getBlack(), token.getBlack()));
-        
-        //writeString("new black_t= " + token.getBlack());
         
         
         if((token.getCount() == 0) && (nodeRunner.getBlack() == nodeRunner.getId())){
-        //if(token.getCount() == 0 && state.getBlack() == mynode){
-            writeString("TERMINATION DETECTED");
-            writeString("Termination detected "
-                    + (System.currentTimeMillis() - network.getLastPassive())
-                    + " milliseconds after last node became passive.");
-            
-            long end = System.nanoTime();
-            PerformanceLogger.instance().addProcTime(2, end - start);
-            TDS.instance().announce(2);
+            announce(start);
+            return;
         }else{
             writeString("INCONSISTENT SNAPSHOT");
             propagate(token);
+            long end = System.nanoTime();
+            PerformanceLogger.instance().addProcTime(2, end - start);
         }
+    }
+    
+    private void announce(long start) {
+        writeString("Termination detected "
+                + (System.currentTimeMillis() - network.getLastPassive())
+                + " milliseconds after last node became passive.");
         
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(5, end - start);
+        PerformanceLogger.instance().addProcTime(2, end - start);
+        TDS.instance().announce(2);
     }
     
     private void propagate(ProbeMessage2 token) {
@@ -95,6 +93,7 @@ public class Prober2{
         
         PerformanceLogger.instance().incTokens(2);
         PerformanceLogger.instance().addTokenBits(2, token.copy());
+        /** proc time added by the caller when we return */
         
     }
     
@@ -105,8 +104,7 @@ public class Prober2{
         while(!this.nodeRunner.isPassive()) {
             //synchronized(nodeRunner){
                 writeString("PROBE waiting node for passive");
-                try { wait(); } catch(InterruptedException e) {} //maybe remove break
-            //}
+                try { wait(); } catch(InterruptedException e) {}             //}
         }
     }
 

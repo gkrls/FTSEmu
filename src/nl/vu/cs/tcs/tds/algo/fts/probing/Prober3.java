@@ -168,7 +168,7 @@ public class Prober3 {
             nodeRunner.setBlack(nodeRunner.furthest(nodeRunner.getBlack(), nodeRunner.getNext()));
         
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(6, end - start);
+        PerformanceLogger.instance().addProcTime(3, end - start);
     }
     
     private void announce(long start) {

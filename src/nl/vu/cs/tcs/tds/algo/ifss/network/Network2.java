@@ -1,6 +1,11 @@
 package algo.ifss.network;
 
 
+import static util.Options.AVERAGE_NETWORK_LATENCY;
+import static util.Options.AVERAGE_NETWORK_LATENCY_MAX;
+import static util.Options.AVERAGE_NETWORK_LATENCY_MIN;
+import static util.Options.NETWORK_LATENCY_SD;
+
 import java.util.Random;
 
 import ibis.util.ThreadPool;
@@ -54,11 +59,16 @@ public class Network2 {
     
     // Send message with random delay. Execute in separate thread to not delay the sender with it.
     public void sendMessage(final int dest, final NodeMessage2 nodeMessage) {
+        /** choose network delay **/
+        int d = (int) Math.round(random.nextGaussian() * NETWORK_LATENCY_SD + AVERAGE_NETWORK_LATENCY);
+        if (d < AVERAGE_NETWORK_LATENCY_MIN) d = AVERAGE_NETWORK_LATENCY_MIN;
+        else if (d > AVERAGE_NETWORK_LATENCY_MAX) d = AVERAGE_NETWORK_LATENCY_MAX;
+        final int delay = d;
+        
         ThreadPool.createNew(() -> {
-            int delay = random.nextInt(50);
             try { Thread.sleep(delay); } catch (InterruptedException e){}
             nodeRunners[dest].receiveMessage(nodeMessage);
-        }, "Sender5");
+        }, "Sender2");
     }
     //To be called when termination is detected
     public void killNodes() {
@@ -69,8 +79,13 @@ public class Network2 {
     
     // Send the token and receive it after random delay. Execute in seperate thread to not delay the sender.
     public void sendProbeMessage(final int dest, final ProbeMessage2 probeMessage) {
+        /** choose network delay **/
+        int d = (int) Math.round(random.nextGaussian() * NETWORK_LATENCY_SD + AVERAGE_NETWORK_LATENCY);
+        if (d < AVERAGE_NETWORK_LATENCY_MIN) d = AVERAGE_NETWORK_LATENCY_MIN;
+        else if (d > AVERAGE_NETWORK_LATENCY_MAX) d = AVERAGE_NETWORK_LATENCY_MAX;
+        final int delay = d;
+        
         ThreadPool.createNew(() -> {
-            int delay = random.nextInt(50); //Maybe increase that delay as token is larger
             try { Thread.sleep(delay); } catch (InterruptedException e){}
             probers[dest].receiveMessage(probeMessage);
         }, "ProbeSender2");
@@ -78,8 +93,6 @@ public class Network2 {
     
     public void sendFirstProbeMessage(final int dest, final ProbeMessage2 probeMessage) {
         ThreadPool.createNew(() -> {
-            //int delay = random.nextInt(50); //Maybe increase that delay as token is larger
-            //try { Thread.sleep(delay); } catch (InterruptedException e){}
             probers[dest].receiveFirstMessage(probeMessage);
         }, "ProbeSender2");
     }

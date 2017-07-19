@@ -23,6 +23,7 @@ public class Options {
 	public static final int CRASHING_NODES_INTERVAL = -14;
 	public static final int CRASH_NOTIFY_INTERVAL = -15;
 	public static final int AVERAGE_NETWORK_LATENCY = -16;
+	public static final int PRINT_INFO = -17;
 	
 	public static final int PROB_DISTRIBUTION_UNIFORM = 1;
 	public static final int PROB_DISTRIBUTION_GAUSSIAN = 2;
@@ -73,6 +74,9 @@ public class Options {
     public static final int AVERAGE_NETWORK_LATENCY_MIN = 20;
     public static final int AVERAGE_NETWORK_LATENCY_MAX = 100;
     public static final int NETWORK_LATENCY_SD = 10;
+    
+    public static final int PRINT_INFO_ACTIVE = 1;
+    public static final int PRINT_INFO_PASSIVE = 0;
     /*************************************************************/
 	
     
@@ -95,7 +99,7 @@ public class Options {
 	public static final int DEFAULT_AVERAGE_NETWORK_LATENCY = (AVERAGE_NETWORK_LATENCY_MIN + AVERAGE_NETWORK_LATENCY_MAX) / 2;
 	
 	public static final int DEFAULT_CRASH_NOTIFY_INTERVAL = 3 * AVERAGE_NETWORK_LATENCY_MAX;
-	
+	public static final int DEFAULT_PRINT_INFO = PRINT_INFO_PASSIVE;
 	
 
 	
@@ -109,6 +113,7 @@ public class Options {
 	
 	public void init(){
 		opts = new ArrayList<Option>();
+		opts.add(new Option(Options.PRINT_INFO, "-i", false, DEFAULT_PRINT_INFO, "info"));
 		opts.add(new Option(Options.NUM_OF_NODES, "-n", true, DEFAULT_NUM_OF_NODES, "network-size"));
 		opts.add(new Option(Options.LOG, "-log", false, DEFAULT_LOG, "enable-logging"));
 		opts.add(new Option(Options.MAX_WAIT, "-w", true, DEFAULT_MAX_WAIT, "max-wait"));
@@ -268,6 +273,9 @@ public class Options {
 		if(option == Options.AVERAGE_NETWORK_LATENCY) {
 		    getOptByName("-anl").setValue(value);
 		}
+		if(option == Options.PRINT_INFO) {
+		    getOptByName("-i").setValue(value);
+		}
 		
 	}
 	
@@ -302,6 +310,8 @@ public class Options {
 		    return Options.CRASHING_NODES_INTERVAL;
 		if(opt.equals("-anl"))
 		    return Options.AVERAGE_NETWORK_LATENCY;
+		if(opt.equals("-i"))
+		    return Options.PRINT_INFO;
 		throw new IllegalArgumentException("Invalid option: '" + opt + "'");	
 	}
 
@@ -316,6 +326,8 @@ public class Options {
 				System.exit(1);
 			}
 			switch(opt){
+			    case Options.PRINT_INFO:
+			        this.setOption(Options.PRINT_INFO, Options.PRINT_INFO_ACTIVE);
 				case Options.LOG:
 					this.setOption(Options.LOG, 1); break;
 				case Options.CSV:

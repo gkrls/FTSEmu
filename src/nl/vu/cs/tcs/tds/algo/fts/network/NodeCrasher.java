@@ -124,6 +124,7 @@ public class NodeCrasher {
 
     private void notifyNodesRandomly(int crashedNode, int[] ignoreCrashed) throws NodeCrasherStopException{
         ThreadPool.createNew(() -> {
+            Random random = new Random();
             try {
                 ArrayList<Integer> notified = new ArrayList<Integer>();
                 

@@ -126,7 +126,7 @@ public class TDS {
     
     private void printSimInfo() {
         for(Option opt: Options.instance().getAll()){
-            if(opt.getName().equals("-ci") || opt.getName().equals("-anl"))
+            if(opt.getName().equals("-ci") || opt.getName().equals("-anl") || opt.getName().equals("-cni"))
                 System.out.print(opt.alias() + " ");
             else
                 System.out.print(opt.alias() + " \t");
@@ -167,7 +167,7 @@ public class TDS {
                 if(Options.instance().get(CRASHING_NODES) == Options.CRASHING_NODES_RANDOM) {
                     System.out.println("\t-- random");
                 } else {
-                    System.out.println("\t-- " + Options.instance().get(CRASHING_NODES)); break;
+                    System.out.println("\t-- " + Options.instance().get(CRASHING_NODES));
                 }
             } else if (opt.getName().equals("-anl")) {
                 System.out.println("-- " + Options.instance().get(opt.getId()));
@@ -178,7 +178,8 @@ public class TDS {
     }
     
     public void start(){
-        printSimInfo();
+        if(Options.instance().get(PRINT_INFO) == Options.PRINT_INFO_ACTIVE)
+            printSimInfo();
     	if(Options.instance().get(Options.VERSION) == 0){
     		tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
     		tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));

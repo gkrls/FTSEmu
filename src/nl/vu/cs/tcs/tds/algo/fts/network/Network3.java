@@ -109,7 +109,7 @@ public class Network3 {
                 
                 if(stopAll) return;
                 
-                System.out.println("Node " + dest + " learnt crash of" + crashedNode +" !" );
+                //System.out.println("Node " + dest + " learnt crash of" + crashedNode +" !" );
                 fds[dest].receiveCrash(crashedNode);
                 
             }, "NodeCrasher3");
