@@ -21,6 +21,7 @@ public class Options {
 	public static final int ACTIVITY_STRATEGY = -12;
 	public static final int BASIC_ALGO_TYPE = -13;
 	public static final int CRASHED_NODES_INTERVAL = -14;
+	public static final int AVERAGE_NETWORK_LATENCY = -15;
 	
 	public static final int PROB_DISTRIBUTION_UNIFORM = 1;
 	public static final int PROB_DISTRIBUTION_GAUSSIAN = 2;
@@ -40,15 +41,43 @@ public class Options {
 	
 	public static final int CRASHING_NODES_INTERVAL_UNIFORM = 1;
 	public static final int CRASHING_NODES_INTERVAL_GAUSSIAN = 2;
-	public static final int CRASHING_NODES_INTERVAL_MIN = 200;
-	public static final int CRASHING_NODES_INTERVAL_MAX = 3000;
+
 	
-	
-	
-	public static final int DEFAULT_NUM_OF_NODES = 4;
-	public static final int MAXIMUM_NUM_OF_NODES = 1024;
-	public static final int DEFAULT_ACTIVITY_LEVEL = 1;
+	/** The following options are not user definable (for now)! **/
+	public static final int MINIMUM_ACTIVITY_LEVEL = 1;
 	public static final int MAXIMUM_ACTIVITY_LEVEL = 2;
+	
+	public static final int MINIMUM_NUM_OF_NODES = 2;
+	public static final int MAXIMUM_NUM_OF_NODES = 1024;
+	
+    public static final int UNIFORM_COMPUTE_MAX = 2000;
+    public static final int UNIFORM_COMPUTE_MIN = 1;
+    public static final int UNIFORM_MESSAGES_MAX = 3;
+    public static final int UNIFORM_MESSAGES_MIN = 0;
+    
+    public static final int GAUSSIAN_COMPUTE_MU = 1000;
+    public static final int GAUSSIAN_COMPUTE_SD = 200;
+    public static final int GAUSSIAN_MESSAGES_MU = 1;
+    public static final int GAUSSIAN_MESSAGES_SD = 1;
+    
+    public static final int CRASHING_NODES_INTERVAL_MIN = 200;
+    public static final int CRASHING_NODES_INTERVAL_MAX = 3000;
+    
+    public static final int UNIFORM_CRASHING_NODES_INTERVAL_MAX = 2000;
+    public static final int UNIFORM_CRASHING_NODES_INTERVAL_MIN = CRASHING_NODES_INTERVAL_MIN;
+    
+    public static final int GAUSSIAN_CRASHING_NODES_INTERVAL_MU = 1000;
+    public static final int GAUSSIAN_CRASHING_NODES_INTERVAL_SD = 200;
+    
+    public static final int AVERAGE_NETWORK_LATENCY_MIN = 20;
+    public static final int AVERAGE_NETWORK_LATENCY_MAX = 100;
+    public static final int NETWORK_LATENCY_SD = 10;
+    /*************************************************************/
+	
+    
+	public static final int DEFAULT_NUM_OF_NODES = 2;
+	public static final int DEFAULT_ACTIVITY_LEVEL = MINIMUM_ACTIVITY_LEVEL;
+	
 	public static final int DEFAULT_MAX_WAIT = 100000;
 	public static final int DEFAULT_LOG = 0;
 	public static final int DEFAULT_VERBOSE = 0;
@@ -62,26 +91,11 @@ public class Options {
 	public static final int DEFAULT_ACTIVITY_STRATEGY = ACTIVITY_STRATEGY_COMPUTE_SEND;
 	public static final int DEFAULT_BASIC_ALGO_TYPE = BASIC_ALGO_DECENTRALIZED_EVEN;
 	public static final int DEFAULT_CRASHED_NODES_INTERVAL = CRASHING_NODES_INTERVAL_UNIFORM;
+	public static final int DEFAULT_AVERAGE_NETWORK_LATENCY = (AVERAGE_NETWORK_LATENCY_MIN + AVERAGE_NETWORK_LATENCY_MAX) / 2;
 	
 	
 	
-	/** The following options are not user definable (for now)! **/
-	public static final int UNIFORM_COMPUTE_MAX = 2000;
-	public static final int UNIFORM_COMPUTE_MIN = 1;
-	public static final int UNIFORM_MESSAGES_MAX = 3;
-	public static final int UNIFORM_MESSAGES_MIN = 0;
-	
-	public static final int GAUSSIAN_COMPUTE_MU = 1000;
-	public static final int GAUSSIAN_COMPUTE_SD = 200;
-	public static final int GAUSSIAN_MESSAGES_MU = 1;
-	public static final int GAUSSIAN_MESSAGES_SD = 1;
-	
-	public static final int UNIFORM_CRASHING_NODES_INTERVAL_MAX = 2000;
-	public static final int UNIFORM_CRASHING_NODES_INTERVAL_MIN = 200;
-	
-	public static final int GAUSSIAN_CRASHING_NODES_INTERVAL_MU = 1000;
-	public static final int GAUSSIAN_CRASHING_NODES_INTERVAL_SD = 200;
-	/*************************************************************/
+
 	
 	
 	
@@ -107,6 +121,7 @@ public class Options {
 		opts.add(new Option(Options.ACTIVITY_STRATEGY, "-strategy", false, DEFAULT_ACTIVITY_STRATEGY, "activity-strategy"));
 		opts.add(new Option(Options.BASIC_ALGO_TYPE, "-batype", false, DEFAULT_BASIC_ALGO_TYPE, "basic-algo-type"));
 		opts.add(new Option(Options.CRASHED_NODES_INTERVAL, "-ci", false, DEFAULT_CRASHED_NODES_INTERVAL, "crashing-nodes-interval"));
+		opts.add(new Option(Options.AVERAGE_NETWORK_LATENCY, "-anl", false, DEFAULT_AVERAGE_NETWORK_LATENCY, "average-network-latency"));
 	}
 	
 	public static Options instance(){
@@ -192,6 +207,12 @@ public class Options {
 	              System.exit(1);
 		    }
 		}
+		if(option == Options.AVERAGE_NETWORK_LATENCY) {
+		    if(value < AVERAGE_NETWORK_LATENCY_MIN || value > AVERAGE_NETWORK_LATENCY_MAX) {
+		        System.out.println("Use " + AVERAGE_NETWORK_LATENCY_MIN + " <= l <= " + AVERAGE_NETWORK_LATENCY_MAX + " for average network latency");
+		        System.exit(1);
+		    }
+		}
 		
 	}
 	
@@ -241,6 +262,9 @@ public class Options {
 		if(option == Options.CRASHED_NODES_INTERVAL){
 		    getOptByName("-ci").setValue(value);
 		}
+		if(option == Options.AVERAGE_NETWORK_LATENCY) {
+		    getOptByName("-anl").setValue(value);
+		}
 		
 	}
 	
@@ -273,6 +297,8 @@ public class Options {
 		    return Options.BASIC_ALGO_TYPE;
 		if(opt.equals("-ci"))
 		    return Options.CRASHED_NODES_INTERVAL;
+		if(opt.equals("-anl"))
+		    return Options.AVERAGE_NETWORK_LATENCY;
 		throw new IllegalArgumentException("Invalid option: '" + opt + "'");	
 	}
 
@@ -378,6 +404,15 @@ public class Options {
                         this.setOption(Options.CRASHED_NODES_INTERVAL,  Integer.parseInt(args[i+1]));
                     } catch(Exception e) {
                         System.out.println("Invalid value for '-ci'");
+                        System.exit(1);
+                    }
+                    i++;
+                    break;
+                case Options.AVERAGE_NETWORK_LATENCY:
+                    try {
+                        this.setOption(Options.AVERAGE_NETWORK_LATENCY, Integer.parseInt(args[i+1]));
+                    } catch(Exception e) {
+                        System.out.println("Invalid value for '-avl'");
                         System.exit(1);
                     }
                     i++;

@@ -11,6 +11,8 @@ import algo.fts.node.NodeRunner3;
 import algo.fts.probing.ProbeMessage3;
 import algo.fts.probing.Prober3;
 
+import static util.Options.*;
+
 public class Network3 {
     
     private final int nnodes;
@@ -68,7 +70,13 @@ public class Network3 {
     
     public void sendMessage(final int dest, final NodeMessage3 msg) {
         if(!crashed.contains(dest)) {
-            final int delay = random.nextInt(50);
+            
+            /** choose network delay **/
+            int d = (int) Math.round(random.nextGaussian() * NETWORK_LATENCY_SD + AVERAGE_NETWORK_LATENCY);
+            if (d < AVERAGE_NETWORK_LATENCY_MIN) d = AVERAGE_NETWORK_LATENCY_MIN;
+            else if (d > AVERAGE_NETWORK_LATENCY_MAX) d = AVERAGE_NETWORK_LATENCY_MAX;
+            final int delay = d;
+            
             ThreadPool.createNew(() -> {
                 try { Thread.sleep(delay); } catch (InterruptedException e) {}
                 nodeRunners[dest].receiveMessage(msg);
@@ -183,8 +191,13 @@ public class Network3 {
     }
 
     public void sendProbeMessage(ProbeMessage3 token, int dest) {
+        /** choose delay **/
+        int d = (int) Math.round(random.nextGaussian() * NETWORK_LATENCY_SD + AVERAGE_NETWORK_LATENCY);
+        if (d < AVERAGE_NETWORK_LATENCY_MIN) d = AVERAGE_NETWORK_LATENCY_MIN;
+        else if (d > AVERAGE_NETWORK_LATENCY_MAX) d = AVERAGE_NETWORK_LATENCY_MAX;
+        final int delay = d;
+        
         ThreadPool.createNew(() -> {
-            int delay = random.nextInt(50);
             try { Thread.sleep(delay); } catch(InterruptedException e) {}
             probers[dest].receiveMessage(token);
         }, "ProbeSender3");

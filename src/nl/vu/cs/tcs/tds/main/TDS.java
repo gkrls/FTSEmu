@@ -126,7 +126,7 @@ public class TDS {
     
     private void printSimInfo() {
         for(Option opt: Options.instance().getAll()){
-            if(opt.getName().equals("-ci"))
+            if(opt.getName().equals("-ci") || opt.getName().equals("-anl"))
                 System.out.print(opt.alias() + " ");
             else
                 System.out.print(opt.alias() + " \t");
@@ -169,6 +169,8 @@ public class TDS {
                 } else {
                     System.out.println("\t-- " + Options.instance().get(CRASHING_NODES)); break;
                 }
+            } else if (opt.getName().equals("-anl")) {
+                System.out.println("-- " + Options.instance().get(opt.getId()));
             } else {
                 System.out.println(" \t-- " + Options.instance().get(opt.getId()));
             }

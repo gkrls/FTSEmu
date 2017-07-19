@@ -67,9 +67,10 @@ public class NodeCrasher {
         if (Options.instance().get(CRASHED_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_UNIFORM) {
             int delay;
             for (int crashedNode: crashedNodes) {
-                delay = random.nextInt();
                 
-                if (delay < CRASHING_NODES_INTERVAL_MIN) delay = CRASHING_NODES_INTERVAL_MIN;
+                delay = random.nextInt(UNIFORM_CRASHING_NODES_INTERVAL_MAX);
+                
+                if (delay < UNIFORM_CRASHING_NODES_INTERVAL_MIN) delay = UNIFORM_CRASHING_NODES_INTERVAL_MIN;
                 
                 /* wait */
                 try { Thread.sleep(delay); } catch (InterruptedException e) {}
