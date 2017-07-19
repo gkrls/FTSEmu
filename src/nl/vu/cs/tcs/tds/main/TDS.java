@@ -130,29 +130,29 @@ public class TDS {
             if(opt.getName().equals("-dist")) {
                 switch(Options.instance().get(PROB_DISTRIBUTION)) {
                     case PROB_DISTRIBUTION_UNIFORM: 
-                        System.out.println("--uniform"); break;
+                        System.out.println("-- uniform"); break;
                     case PROB_DISTRIBUTION_GAUSSIAN:
-                        System.out.println("--gaussian"); break;
+                        System.out.println("-- gaussian"); break;
                 }
             } else if (opt.getName().equals("-strategy")) {
                 switch(Options.instance().get(ACTIVITY_STRATEGY)) {
                     case ACTIVITY_STRATEGY_COMPUTE_SEND: 
-                        System.out.println("--compute-send"); break;
+                        System.out.println("-- compute-send"); break;
                     case ACTIVITY_STRATEGY_N_ACTIVITIES:
-                        System.out.println("--n-activities"); break;
+                        System.out.println("-- n-activities"); break;
                 }
                 
             } else if (opt.getName().equals("-batype")) {
                 switch(Options.instance().get(BASIC_ALGO_TYPE)) {
                     case BASIC_ALGO_CENTRALIZED: 
-                        System.out.println("--centralized"); break;
+                        System.out.println("-- centralized"); break;
                     case BASIC_ALGO_DECENTRALIZED_EVEN:
-                        System.out.println("--even-nodes-active"); break;
+                        System.out.println("-- even-nodes-active"); break;
                     case BASIC_ALGO_DECENTRALIZED_RANDOM:
-                        System.out.println("--random-nodes-active"); break;
+                        System.out.println("-- random-nodes-active"); break;
                 }
             } else {
-                System.out.println(" \t--" + Options.instance().get(opt.getId()));
+                System.out.println(" \t-- " + Options.instance().get(opt.getId()));
             }
         }
     }
@@ -213,6 +213,7 @@ public class TDS {
     
     public static void main(String[] args) {
     	
+        
     	configlog4j();
     	Options.instance().parse(args);
     	TDS.instance.start();

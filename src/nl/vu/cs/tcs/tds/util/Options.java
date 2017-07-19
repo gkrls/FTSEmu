@@ -34,6 +34,9 @@ public class Options {
 	public static final int BASIC_ALGO_DECENTRALIZED_RANDOM = 3;
 	
 	
+	public static final int CRASHED_NODES_NONE = 0;
+	public static final int CRASHED_NODES_RANDOM = -1;
+	
 	
 	public static final int DEFAULT_NUM_OF_NODES = 4;
 	public static final int MAXIMUM_NUM_OF_NODES = 1024;
@@ -47,7 +50,7 @@ public class Options {
 	public static final int DEFAULT_CSV_FLUSH = 0;
 	public static final int DEFAULT_VERSION = 0;
 	private static final int[] ALLOWED_VERSIONS = {1,2,3, 12, 13, 21, 31, 23, 32, 123, 132, 213, 231, 312, 321};
-	public static final int DEFAULT_CRUSHED_NODES = 0;
+	public static final int DEFAULT_CRUSHED_NODES = CRASHED_NODES_NONE;
 	public static final int DEFAULT_PROB_DISTRIBUTION = PROB_DISTRIBUTION_UNIFORM;
 	public static final int DEFAULT_ACTIVITY_STRATEGY = ACTIVITY_STRATEGY_COMPUTE_SEND;
 	public static final int DEFAULT_BASIC_ALGO_TYPE = BASIC_ALGO_DECENTRALIZED_EVEN;
@@ -144,7 +147,7 @@ public class Options {
 			}
 		}
 		if(option == Options.CRASHED_NODES){
-		    if(value < 0 || value > Options.instance().get(Options.NUM_OF_NODES) - 1){
+		    if((value < 0 && value != Options.CRASHED_NODES_RANDOM) || value > Options.instance().get(Options.NUM_OF_NODES) - 1){
 		        System.out.println("Cannot crash less than 0 or more than n-1 nodes");
                 System.exit(1);
 		    }
@@ -311,8 +314,8 @@ public class Options {
 				    try{
 				        this.setOption(Options.CRASHED_NODES, Integer.parseInt(args[i+1]));
 				    }catch(Exception e){
-				        System.out.println("Invalid value for option '-c'");
-				        System.exit(1);
+				        //-c flag without arg
+				        this.setOption(Options.CRASHED_NODES, Options.CRASHED_NODES_RANDOM);
 				    }
 				    i++;
 				    break;

@@ -22,12 +22,19 @@ public class NodeCrasher {
         this.stop = false;
         this.network = network;
         this.nnodes = nnodes;
+        this.random = new Random();
         numCrashedNodes = Options.instance().get(Options.CRASHED_NODES);
+        
+        if (numCrashedNodes == Options.CRASHED_NODES_RANDOM) {
+            numCrashedNodes = random.nextInt(nnodes);
+            
+        }
+        
         this.crashedNodes = new int[numCrashedNodes];
         for (int i = 0; i < numCrashedNodes; i++) {
             crashedNodes[i] = -1;
         }
-        this.random = new Random();
+        
     }
     
     
@@ -46,7 +53,7 @@ public class NodeCrasher {
             crashedNodes[i] = newCrash;
         }
         
-        TDS.writeString(0, " [FTS]\tWill crash nodes: " + Arrays.toString(crashedNodes));
+        TDS.writeString(0, " [FTS]\tWill crash " + numCrashedNodes + " nodes: " + Arrays.toString(crashedNodes));
     
         for(int crashedNode : crashedNodes) {
             int delay = random.nextInt(2000);
