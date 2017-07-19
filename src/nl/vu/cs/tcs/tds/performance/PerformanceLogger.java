@@ -47,7 +47,7 @@ public class PerformanceLogger {
 		}
 		CSV_FILE = "[ " + fileVersionString + " ]" + "__" +
 	            Options.instance().get(NUM_OF_NODES) + "-" +
-	            Options.instance().get(CRASHED_NODES)+ "__" +
+	            Options.instance().get(CRASHING_NODES)+ "__" +
 	            (Options.instance().get(ACTIVITY_STRATEGY) == ACTIVITY_STRATEGY_COMPUTE_SEND? "compute-send": "n-activities") + "__" +
 	            (Options.instance().get(PROB_DISTRIBUTION) == PROB_DISTRIBUTION_UNIFORM? "uniform": "gaussian") + ".csv";
 	

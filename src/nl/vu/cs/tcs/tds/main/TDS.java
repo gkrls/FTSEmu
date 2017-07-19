@@ -126,7 +126,10 @@ public class TDS {
     
     private void printSimInfo() {
         for(Option opt: Options.instance().getAll()){
-            System.out.print(opt.alias() + " \t");
+            if(opt.getName().equals("-ci"))
+                System.out.print(opt.alias() + " ");
+            else
+                System.out.print(opt.alias() + " \t");
             if(opt.getName().equals("-dist")) {
                 switch(Options.instance().get(PROB_DISTRIBUTION)) {
                     case PROB_DISTRIBUTION_UNIFORM: 
@@ -150,6 +153,21 @@ public class TDS {
                         System.out.println("-- even-nodes-active"); break;
                     case BASIC_ALGO_DECENTRALIZED_RANDOM:
                         System.out.println("-- random-nodes-active"); break;
+                }
+            } else if(opt.getName().equals("-ci")){
+                switch(Options.instance().get(CRASHED_NODES_INTERVAL)) {
+                    case CRASHING_NODES_INTERVAL_GAUSSIAN: 
+                        System.out.println("-- gaussian"); break;
+                    case CRASHING_NODES_INTERVAL_UNIFORM:
+                        System.out.println("-- uniform"); break;
+                    default:
+                        System.out.println("-- " + Options.instance().get(CRASHED_NODES_INTERVAL)); break;
+                }
+            } else if (opt.getName().equals("-c")) {
+                if(Options.instance().get(CRASHING_NODES) == Options.CRASHING_NODES_RANDOM) {
+                    System.out.println("\t-- random");
+                } else {
+                    System.out.println("\t-- " + Options.instance().get(CRASHING_NODES)); break;
                 }
             } else {
                 System.out.println(" \t-- " + Options.instance().get(opt.getId()));

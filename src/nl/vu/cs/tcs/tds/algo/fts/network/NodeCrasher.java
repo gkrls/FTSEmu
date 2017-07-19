@@ -8,13 +8,16 @@ import ibis.util.ThreadPool;
 import util.Options;
 import main.TDS;
 
+import static util.Options.*;
+
 public class NodeCrasher {
     
     private Network3 network;
     private int numCrashedNodes;
     private int[] crashedNodes;
     private int nnodes;
-    private boolean stop;
+    /* maybe volatile is not needed! */
+    private volatile boolean stop;
     
     private Random random;
     
@@ -23,9 +26,9 @@ public class NodeCrasher {
         this.network = network;
         this.nnodes = nnodes;
         this.random = new Random();
-        numCrashedNodes = Options.instance().get(Options.CRASHED_NODES);
+        numCrashedNodes = Options.instance().get(Options.CRASHING_NODES);
         
-        if (numCrashedNodes == Options.CRASHED_NODES_RANDOM) {
+        if (numCrashedNodes == Options.CRASHING_NODES_RANDOM) {
             numCrashedNodes = random.nextInt(nnodes);
             
         }
@@ -48,19 +51,71 @@ public class NodeCrasher {
     public void go() {
         for (int i = 0; i < numCrashedNodes; i++ ) {
             int newCrash = random.nextInt(nnodes);
+            
+            /* *
+             * The nodes will be crashed in the order they are added in this list, 
+             * thus the order is uniformly random 
+             * */
             while(contains(crashedNodes, newCrash))
                 newCrash = random.nextInt(nnodes);
+            
             crashedNodes[i] = newCrash;
         }
         
         TDS.writeString(0, " [FTS]\tWill crash " + numCrashedNodes + " nodes: " + Arrays.toString(crashedNodes));
-    
-        for(int crashedNode : crashedNodes) {
-            int delay = random.nextInt(2000);
-            try { Thread.sleep(delay); } catch (InterruptedException e) {}
-            network.crash(crashedNode);
-            try { notifyNodesRandomly(crashedNode, crashedNodes); } catch (NodeCrasherStopException e) { return; }
+        
+        if (Options.instance().get(CRASHED_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_UNIFORM) {
+            int delay;
+            for (int crashedNode: crashedNodes) {
+                delay = random.nextInt();
+                
+                if (delay < CRASHING_NODES_INTERVAL_MIN) delay = CRASHING_NODES_INTERVAL_MIN;
+                
+                /* wait */
+                try { Thread.sleep(delay); } catch (InterruptedException e) {}
+                
+                /* crash the node */
+                network.crash(crashedNode);
+                
+                /* start notifying nodes in a separate thread simulating failure detection */
+                try {notifyNodesRandomly(crashedNode, crashedNodes); } catch (NodeCrasherStopException e) { return; }
+                
+            }
+        } else if (Options.instance().get(CRASHED_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_GAUSSIAN){
+            int delay;
+            for (int crashedNode: crashedNodes) {
+                
+                delay = (int) Math.round(random.nextGaussian() * GAUSSIAN_CRASHING_NODES_INTERVAL_SD + GAUSSIAN_CRASHING_NODES_INTERVAL_MU);
+                
+                if (delay < CRASHING_NODES_INTERVAL_MIN) delay = CRASHING_NODES_INTERVAL_MIN;
+                
+                /* wait */
+                try { Thread.sleep(delay); } catch (InterruptedException e) {}
+                
+                /* crash the node */
+                network.crash(crashedNode);
+                
+                /* start notifying nodes in a separate thread simulating failure detection */
+                try {notifyNodesRandomly(crashedNode, crashedNodes); } catch (NodeCrasherStopException e) { return; }
+                
+            }
             
+        } else { //fixed intervals
+            
+            int delay = Options.instance().get(CRASHED_NODES_INTERVAL);
+            
+            for (int crashedNode: crashedNodes) {
+                
+                /* wait */
+                try { Thread.sleep(delay); } catch (InterruptedException e) {}
+                
+                /* crash the node */
+                network.crash(crashedNode);
+                
+                /* start notifying nodes in a separate thread simulating failure detection */
+                try {notifyNodesRandomly(crashedNode, crashedNodes); } catch (NodeCrasherStopException e) { return; }
+                
+            }
         }
     }
 

@@ -16,10 +16,11 @@ public class Options {
 	public static final int CSV = -7;
 	public static final int FLUSH_CSV = -8;
 	public static final int VERSION = -9;
-	public static final int CRASHED_NODES = -10;
+	public static final int CRASHING_NODES = -10;
 	public static final int PROB_DISTRIBUTION = -11;
 	public static final int ACTIVITY_STRATEGY = -12;
 	public static final int BASIC_ALGO_TYPE = -13;
+	public static final int CRASHED_NODES_INTERVAL = -14;
 	
 	public static final int PROB_DISTRIBUTION_UNIFORM = 1;
 	public static final int PROB_DISTRIBUTION_GAUSSIAN = 2;
@@ -34,8 +35,14 @@ public class Options {
 	public static final int BASIC_ALGO_DECENTRALIZED_RANDOM = 3;
 	
 	
-	public static final int CRASHED_NODES_NONE = 0;
-	public static final int CRASHED_NODES_RANDOM = -1;
+	public static final int CRASHING_NODES_NONE = 0;
+	public static final int CRASHING_NODES_RANDOM = -1;
+	
+	public static final int CRASHING_NODES_INTERVAL_UNIFORM = 1;
+	public static final int CRASHING_NODES_INTERVAL_GAUSSIAN = 2;
+	public static final int CRASHING_NODES_INTERVAL_MIN = 200;
+	public static final int CRASHING_NODES_INTERVAL_MAX = 3000;
+	
 	
 	
 	public static final int DEFAULT_NUM_OF_NODES = 4;
@@ -50,10 +57,11 @@ public class Options {
 	public static final int DEFAULT_CSV_FLUSH = 0;
 	public static final int DEFAULT_VERSION = 0;
 	private static final int[] ALLOWED_VERSIONS = {1,2,3, 12, 13, 21, 31, 23, 32, 123, 132, 213, 231, 312, 321};
-	public static final int DEFAULT_CRUSHED_NODES = CRASHED_NODES_NONE;
+	public static final int DEFAULT_CRASHED_NODES = CRASHING_NODES_NONE;
 	public static final int DEFAULT_PROB_DISTRIBUTION = PROB_DISTRIBUTION_UNIFORM;
 	public static final int DEFAULT_ACTIVITY_STRATEGY = ACTIVITY_STRATEGY_COMPUTE_SEND;
 	public static final int DEFAULT_BASIC_ALGO_TYPE = BASIC_ALGO_DECENTRALIZED_EVEN;
+	public static final int DEFAULT_CRASHED_NODES_INTERVAL = CRASHING_NODES_INTERVAL_UNIFORM;
 	
 	
 	
@@ -67,6 +75,12 @@ public class Options {
 	public static final int GAUSSIAN_COMPUTE_SD = 200;
 	public static final int GAUSSIAN_MESSAGES_MU = 1;
 	public static final int GAUSSIAN_MESSAGES_SD = 1;
+	
+	public static final int UNIFORM_CRASHING_NODES_INTERVAL_MAX = 2000;
+	public static final int UNIFORM_CRASHING_NODES_INTERVAL_MIN = 200;
+	
+	public static final int GAUSSIAN_CRASHING_NODES_INTERVAL_MU = 1000;
+	public static final int GAUSSIAN_CRASHING_NODES_INTERVAL_SD = 200;
 	/*************************************************************/
 	
 	
@@ -88,10 +102,11 @@ public class Options {
 		opts.add(new Option(Options.CSV, "-csv", false, DEFAULT_CSV, "write-to-csv"));
 		opts.add(new Option(Options.FLUSH_CSV, "-f", false, DEFAULT_CSV_FLUSH, "flush-csv"));
 		opts.add(new Option(Options.VERSION, "-ver", true, DEFAULT_VERSION, "version"));
-		opts.add(new Option(Options.CRASHED_NODES, "-c", true, DEFAULT_CRUSHED_NODES, "crashed-nodes"));
+		opts.add(new Option(Options.CRASHING_NODES, "-c", true, DEFAULT_CRASHED_NODES, "crashing-nodes"));
 		opts.add(new Option(Options.PROB_DISTRIBUTION, "-dist", false, DEFAULT_PROB_DISTRIBUTION, "probability-distr"));
 		opts.add(new Option(Options.ACTIVITY_STRATEGY, "-strategy", false, DEFAULT_ACTIVITY_STRATEGY, "activity-strategy"));
 		opts.add(new Option(Options.BASIC_ALGO_TYPE, "-batype", false, DEFAULT_BASIC_ALGO_TYPE, "basic-algo-type"));
+		opts.add(new Option(Options.CRASHED_NODES_INTERVAL, "-ci", false, DEFAULT_CRASHED_NODES_INTERVAL, "crashing-nodes-interval"));
 	}
 	
 	public static Options instance(){
@@ -146,8 +161,8 @@ public class Options {
 				System.exit(1);
 			}
 		}
-		if(option == Options.CRASHED_NODES){
-		    if((value < 0 && value != Options.CRASHED_NODES_RANDOM) || value > Options.instance().get(Options.NUM_OF_NODES) - 1){
+		if(option == Options.CRASHING_NODES){
+		    if((value < 0 && value != Options.CRASHING_NODES_RANDOM) || value > Options.instance().get(Options.NUM_OF_NODES) - 1){
 		        System.out.println("Cannot crash less than 0 or more than n-1 nodes");
                 System.exit(1);
 		    }
@@ -169,6 +184,12 @@ public class Options {
 		    if(value != BASIC_ALGO_CENTRALIZED && value != BASIC_ALGO_DECENTRALIZED_EVEN && value != BASIC_ALGO_DECENTRALIZED_RANDOM) {
 		        System.out.println("Use 1 (centralize) or 2 (decentralized) for basic algorithm type");
 		        System.exit(1);
+		    }
+		}
+		if(option == Options.CRASHED_NODES_INTERVAL) {
+		    if(value != CRASHING_NODES_INTERVAL_GAUSSIAN && value != CRASHING_NODES_INTERVAL_UNIFORM && (value < CRASHING_NODES_INTERVAL_MIN || value > CRASHING_NODES_INTERVAL_MAX)){
+	              System.out.println("Use 1 (uniform), 2 (gaussian) or " + CRASHING_NODES_INTERVAL_MIN + " <= i <= " + CRASHING_NODES_INTERVAL_MAX +"(fixed) for crashing nodes interval");
+	              System.exit(1);
 		    }
 		}
 		
@@ -205,7 +226,7 @@ public class Options {
 			getOptByName("-f").setValue(value);
 		if(option == Options.VERSION)
 			getOptByName("-ver").setValue(value);
-		if(option == Options.CRASHED_NODES){
+		if(option == Options.CRASHING_NODES){
 		    getOptByName("-c").setValue(value);
 		}
 		if(option == Options.PROB_DISTRIBUTION) {
@@ -216,6 +237,9 @@ public class Options {
 		}
 		if(option == Options.BASIC_ALGO_TYPE) {
 		    getOptByName("-batype").setValue(value);
+		}
+		if(option == Options.CRASHED_NODES_INTERVAL){
+		    getOptByName("-ci").setValue(value);
 		}
 		
 	}
@@ -240,13 +264,15 @@ public class Options {
 		if(opt.equals("-ver"))
 			return Options.VERSION;
 		if(opt.equals("-c"))
-		    return Options.CRASHED_NODES;
+		    return Options.CRASHING_NODES;
 		if(opt.equals("-dist"))
 		    return Options.PROB_DISTRIBUTION;
 		if(opt.equals("-strategy"))
 		    return Options.ACTIVITY_STRATEGY;
 		if(opt.equals("-batype"))
 		    return Options.BASIC_ALGO_TYPE;
+		if(opt.equals("-ci"))
+		    return Options.CRASHED_NODES_INTERVAL;
 		throw new IllegalArgumentException("Invalid option: '" + opt + "'");	
 	}
 
@@ -310,14 +336,15 @@ public class Options {
 					}
 					i++;
 					break;
-				case Options.CRASHED_NODES:
+				case Options.CRASHING_NODES:
 				    try{
-				        this.setOption(Options.CRASHED_NODES, Integer.parseInt(args[i+1]));
+				        this.setOption(Options.CRASHING_NODES, Integer.parseInt(args[i+1]));
+				        i++;
 				    }catch(Exception e){
 				        //-c flag without arg
-				        this.setOption(Options.CRASHED_NODES, Options.CRASHED_NODES_RANDOM);
+				        this.setOption(Options.CRASHING_NODES, Options.CRASHING_NODES_RANDOM);
 				    }
-				    i++;
+				    
 				    break;
 				case Options.PROB_DISTRIBUTION:
 				    try {
@@ -342,6 +369,15 @@ public class Options {
                         this.setOption(Options.BASIC_ALGO_TYPE, Integer.parseInt(args[i+1]));
                     }catch(Exception e) {
                         System.out.println("Invalid value for '-batype'");
+                        System.exit(1);
+                    }
+                    i++;
+                    break;
+                case Options.CRASHED_NODES_INTERVAL:
+                    try {
+                        this.setOption(Options.CRASHED_NODES_INTERVAL,  Integer.parseInt(args[i+1]));
+                    } catch(Exception e) {
+                        System.out.println("Invalid value for '-ci'");
                         System.exit(1);
                     }
                     i++;
