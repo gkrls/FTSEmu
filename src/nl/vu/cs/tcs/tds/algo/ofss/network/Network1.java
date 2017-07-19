@@ -143,6 +143,17 @@ public class Network1 {
             public void run() {
                 synchronized (Network1.class) {
                     lastPassive = System.currentTimeMillis();
+                    
+                    /**
+                     * Every time some node becomes passive sets number of tokens until termination to be
+                     * the number of tokens recorded so far.
+                     * 
+                     * Meanwhile the Prober keeps increasing the number of tokens sent.
+                     * Thus in the end we can just subtract the number of tokens up to termination from the
+                     * total tokens to find the extra.
+                     * 
+                     * */
+                    
                     PerformanceLogger.instance().setTokensUpToTerm(1);
                 }
                 

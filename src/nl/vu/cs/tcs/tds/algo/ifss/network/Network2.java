@@ -73,7 +73,7 @@ public class Network2 {
             int delay = random.nextInt(50); //Maybe increase that delay as token is larger
             try { Thread.sleep(delay); } catch (InterruptedException e){}
             probers[dest].receiveMessage(probeMessage);
-        }, "ProbeSender5");
+        }, "ProbeSender2");
     }
     
     public void sendFirstProbeMessage(final int dest, final ProbeMessage2 probeMessage) {
@@ -81,7 +81,7 @@ public class Network2 {
             //int delay = random.nextInt(50); //Maybe increase that delay as token is larger
             //try { Thread.sleep(delay); } catch (InterruptedException e){}
             probers[dest].receiveFirstMessage(probeMessage);
-        }, "ProbeSender5");
+        }, "ProbeSender2");
     }
     
     public int selectTargetUniform(int mynode) {
@@ -124,10 +124,20 @@ public class Network2 {
         ThreadPool.createNew(() -> {
             synchronized (Network2.class) {
                 lastPassive = System.currentTimeMillis();
+                
+                /**
+                 * Every time some node becomes passive sets number of tokens until termination to be
+                 * the number of tokens recorded so far.
+                 * 
+                 * Meanwhile the Prober keeps increasing the number of tokens sent.
+                 * Thus in the end we can just subtract the number of tokens up to termination from the
+                 * total tokens to find the extra.
+                 * 
+                 * */
+                
                 PerformanceLogger.instance().setTokensUpToTerm(2);
-                //PerformanceLogger.instance().setBackupTokensUpToTerm(5);
             }
-        }, "PassiveRegister5");
+        }, "PassiveRegister2");
     }
 
     public long getLastPassive() {

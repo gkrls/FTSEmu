@@ -1,9 +1,9 @@
 package main;
 
 import ibis.util.ThreadPool;
+import performance.PerformanceLogger;
 import util.Options;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -64,6 +64,7 @@ public class TDSImproved implements Runnable{
                 initiallyActiveList.add(newActive);
             }
             System.out.println("RANDOM(" + initiallyActiveCount +"): " + initiallyActiveList.toString() );
+            PerformanceLogger.instance().setInitiallyActive(initiallyActiveCount, 2);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner2(i, nnodes, network, initiallyActiveList.contains(i)); 
@@ -71,20 +72,19 @@ public class TDSImproved implements Runnable{
 
         } else if (Options.instance().get(BASIC_ALGO_TYPE) == BASIC_ALGO_DECENTRALIZED_EVEN){
             System.out.println("EVEN");
+            PerformanceLogger.instance().setInitiallyActive(nnodes % 2 == 0? nnodes / 2 : ((int) nnodes / 2) + 1, 2);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner2(i, nnodes, network, i % 2 == 0); 
             }
         } else {
+            PerformanceLogger.instance().setInitiallyActive(1, 2);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner2(i, nnodes, network, i == 0); 
             }
         }
 
-
-
-        Options.printOptions();
         network.waitForAllNodes();
         waitTillDone();
         network.killNodes();

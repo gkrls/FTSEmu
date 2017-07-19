@@ -24,6 +24,7 @@ public class Performance {
 	int totalTokens;
 	private int tokensUpToTerm;
 	private boolean timeout;
+	private int initiallyActive;
 	
 	private int totalBackupTokens; //ft only
 	private int backupTokensUpToTerm;//ft only
@@ -36,6 +37,7 @@ public class Performance {
 		this.version = version;
 		this.timeout = false;
 		times = new ConcurrentLinkedQueue<Long>();
+		initiallyActive = -1;
 	}
 	
 	public synchronized void incTokens(){
@@ -54,20 +56,16 @@ public class Performance {
 		return this.totalTokens;
 	}
 	
-	public void setTokensUpToTerm(){
+	public synchronized void setTokensUpToTerm(){
 		tokensUpToTerm = totalTokens;
 	}
 	
-	public void setTokensUpToTermReset(){
-		tokensUpToTerm = 0;
-	}
-	
+//	public void setTokensUpToTermReset(){
+//		tokensUpToTerm = 0;
+//	}
+//	
 	public int getExtraTokens(){
 		return totalTokens - tokensUpToTerm;
-	}
-	
-	public void print(){
-		System.out.println("[" + totalTokens + ", " + getExtraTokens() + "]");
 	}
 	
 	
@@ -166,6 +164,14 @@ public class Performance {
             return result;
         }
         return result;
+    }
+    
+    public void setInitiallyActive(int ia){
+        this.initiallyActive = ia;
+    }
+    
+    public int getInitiallyActive() {
+        return this.initiallyActive;
     }
 	
 	

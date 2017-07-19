@@ -90,11 +90,38 @@ public class Network3 {
         if(stopAll) throw new NodeCrasherStopException();
     }
     
-    public int selectTarget(int mynode) {
-        if(nnodes == 1) return mynode; //this should never happen
-        for(;;) {
+    public int selectTargetUniform(int mynode) {
+        if(nnodes == 1) {
+            System.out.println("WARNING: nnodes = 1, node 0 about to send msg to itself!");
+            return mynode;
+        }
+        
+        for (;;) {
             int dest = random.nextInt(nnodes);
-            if( dest != mynode) return dest;
+            if(dest != mynode) return dest;
+        }
+    }
+    
+    public int selectTargetGaussian(int mynode){
+        if(nnodes == 1) {
+            System.out.println("WARNING: nnodes = 1, node 0 about to send msg to itself!");
+            return mynode;
+        }
+        
+        int dest = -1;
+        
+        
+        for (;;) {
+            /* pick a candidate */
+            dest = random.nextInt(nnodes);
+            
+            /* make sure it's not us */
+            while (dest == mynode)
+                dest = random.nextInt(nnodes);
+            
+            /* decide if destination */
+            if ( random.nextGaussian() >= 0)
+                return dest;
         }
     }
     
@@ -113,6 +140,17 @@ public class Network3 {
             public void run() {
                 synchronized (Network3.class) {
                     lastPassive = System.currentTimeMillis();
+                    
+                    /**
+                     * Every time some node becomes passive sets number of tokens and number of backup tokens
+                     * until termination to be the number of tokens and backup tokens respectively recorded so far.
+                     * 
+                     * Meanwhile the Prober keeps increasing the number of tokens (or backup tokens) sent.
+                     * Thus in the end we can just subtract the number of tokens up to termination from the
+                     * total tokens to find the extra.
+                     * 
+                     * */
+                    
                     PerformanceLogger.instance().setTokensUpToTerm(3);
                     PerformanceLogger.instance().setBackupTokensUpToTerm(3);
                 }

@@ -45,12 +45,14 @@ public class FailureDetector {
         crashedReportUnion.addAll(nodeRunner.getREPORT());
         
         if(!crashedReportUnion.contains(crashedNode)) {
-            nodeRunner.writeString(crashedNode + " crashed");
+            //nodeRunner.writeString(crashedNode + " crashed");
+            
             nodeRunner.getREPORT().add(crashedNode);
-            //nodeRunner.writeString(crashedNode + " " + nodeRunner.getNext());
+
             if(crashedNode == nodeRunner.getNext()) {
                 prober.newSuccessor();
-                writeString("New successor: " + nodeRunner.getNext());
+                
+                //writeString("New successor: " + nodeRunner.getNext());
                 
                 synchronized (this) {
                     if(nodeRunner.getSeq() > 0 || nodeRunner.getNext() < mynode) { 
@@ -58,7 +60,9 @@ public class FailureDetector {
                         lastToken.setBlack(mynode);
                         if(nodeRunner.getNext() < mynode) 
                             lastToken.setSeq(nodeRunner.getSeq() + 1);
-                        nodeRunner.writeString("Sending BACKUP! token");
+                        
+                        //nodeRunner.writeString("Sending BACKUP! token");
+                        
                         lastToken.setSender(this.mynode);
                         
                         

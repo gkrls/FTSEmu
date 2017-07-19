@@ -41,13 +41,19 @@ public class Prober3 {
     
     public synchronized void receiveFirstMessage(ProbeMessage3 token) {}
     
+    /**
+     * This method implements the ReceiveToken_i procedure of the algorithm
+     * 
+     * @param token
+     */
     public synchronized void receiveMessage(ProbeMessage3 token) {
         if(!this.nodeRunner.isCrashed()){
             writeString("TOKEN: seq: " + token.getSeq() + ", black: " + token.getBlack() + " from: " + token.getSender() + " \t\t NODE: seq: " + nodeRunner.getSeq() );
             if(token.getSeq() == nodeRunner.getState().getSeq() + 1) {
-                //token.getCRASHED().removeAll(nodeRunner.getCRASHED()); //difference
+                
                 token.removeAll(nodeRunner.getCRASHED());
-                nodeRunner.getCRASHED().addAll(token.getCRASHED()); //union
+                
+                nodeRunner.getCRASHED().addAll(token.getCRASHED()); 
                 
                 handleToken(token);
                 
@@ -59,39 +65,47 @@ public class Prober3 {
         }
     }
     
+    /**
+     * This method implements the HandleToken_i procedure of the algorithm
+     * 
+     * @param token
+     */
     private void handleToken(ProbeMessage3 token) {
+        
         this.waitUntilPassive();
         long start = System.nanoTime();
         writeString("Handling Token");
+        
         nodeRunner.setBlack(nodeRunner.furthest(nodeRunner.getBlack(), token.getBlack()));
+        
+        /* REPORT_i <- REPORT_i \ CRASHED_t */
         nodeRunner.reportRemove(token.getCRASHED());
         
         if(nodeRunner.getBlack() == this.mynode || nodeRunner.getREPORT().isEmpty()) {
             token.setCount(mynode, 0);
             
+            /* s = {0,1...,N-1} \ CRASHED_i */
             HashSet<Integer> s = (HashSet<Integer>) IntStream.range(0, this.nnodes).boxed().collect(Collectors.toSet());
             s.removeAll(nodeRunner.getCRASHED());
             
-            for(Integer i: s) { token.incrCountBy(mynode, nodeRunner.getCount(i.intValue())); }
+            for(Integer i: s) 
+                token.incrCountBy(mynode, nodeRunner.getCount(i.intValue())); 
         }
         
         if(nodeRunner.getBlack() == this.mynode) { // Can do a termination check
             
-            HashSet<Integer> s = (HashSet<Integer>) IntStream.range(0, this.nnodes).boxed().collect(Collectors.toSet());
+            /* s = {0,1...,N-1} \ CRASHED_i */
+            HashSet<Integer> s = (HashSet<Integer>) IntStream.range(0, this.nnodes)
+                    .boxed()
+                    .collect(Collectors.toSet());
             s.removeAll(nodeRunner.getCRASHED());
+            
             int sum = s.stream().mapToInt(i -> token.getCount(i)).sum();
             
 
             
             if(sum == 0) { // Actual termination
-                writeString("TERMINATION DETECTED");
-                writeString("Termination detected "
-                        + (System.currentTimeMillis() - network.getLastPassive())
-                        + " milliseconds after last node became passive.");
-                
-                long end = System.nanoTime();
-                PerformanceLogger.instance().addProcTime(3, end - start);
-                TDS.instance().announce(3); 
+                announce(start);
                 return;
             }else {
                 writeString("No Term: " + sum);
@@ -103,7 +117,7 @@ public class Prober3 {
         if(nodeRunner.getNext() < mynode) token.incSeq();
         
         if(!nodeRunner.getREPORT().isEmpty()) {
-            //token.getCRASHED().addAll(nodeRunner.getREPORT());
+            
             token.addAll(nodeRunner.getREPORT());
            
             nodeRunner.crashedAdd(nodeRunner.getREPORT());
@@ -126,8 +140,6 @@ public class Prober3 {
         PerformanceLogger.instance().addProcTime(3, end - start);
         PerformanceLogger.instance().incTokens(3);
         PerformanceLogger.instance().addTokenBits(3, token.copy());
-        
-
     }
     
     public void newSuccessor() {
@@ -146,14 +158,9 @@ public class Prober3 {
         if(nodeRunner.getNext() == mynode) {
             writeString("N-1 crashed. Announce after passive");
             this.waitUntilPassive();
-            writeString("Termination detected "
-                    + (System.currentTimeMillis() - network.getLastPassive())
-                    + " milliseconds after last node became passive.");
-            long end = System.nanoTime();
-            PerformanceLogger.instance().addProcTime(3, end - start);
-            PerformanceLogger.instance().setTokensUpToTerm(3);
-            PerformanceLogger.instance().setBackupTokensUpToTerm(3);
-            TDS.instance().announce(3);
+            
+            announce(start);
+            
             return;
         }
         
@@ -163,6 +170,15 @@ public class Prober3 {
         long end = System.nanoTime();
         PerformanceLogger.instance().addProcTime(6, end - start);
     }
+    
+    private void announce(long start) {
+        writeString("Termination detected "
+                + (System.currentTimeMillis() - network.getLastPassive())
+                + " milliseconds after last node became passive.");
+        long end = System.nanoTime();
+        PerformanceLogger.instance().addProcTime(3, end - start);
+        TDS.instance().announce(3);
+    }
 
     public void waitUntilPassive() {
         //this.waitNodeRunner = !this.nodeRunner.isPassive();
@@ -170,7 +186,6 @@ public class Prober3 {
             writeString("PROBE waiting node for passive");
             try { wait(); } catch(InterruptedException e) {}
         }
-        //}
     }
     
     private void writeString(String s) {

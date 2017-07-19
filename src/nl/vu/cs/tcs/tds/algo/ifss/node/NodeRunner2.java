@@ -4,6 +4,7 @@ import java.util.Random;
 
 import util.Options;
 import main.TDS;
+import performance.PerformanceLogger;
 import algo.ifss.network.Network2;
 import algo.ifss.probing.Prober2;
 
@@ -114,6 +115,7 @@ public class NodeRunner2 implements Runnable{
             writeString("becoming passive");
             
             network.registerPassive();
+
         }
     }
     

@@ -122,11 +122,13 @@ public class NodeRunner3 implements Runnable{
             prober.nodeRunnerStopped();
             
             synchronized(this){ isPassive = true; notifyAll(); }
+            
             state.setPassive(true);
+            
             writeString("becoming passive");
+            
             network.registerPassive();
         }
-        writeString("NOT ACTIVE");
         
     }
     
@@ -141,7 +143,7 @@ public class NodeRunner3 implements Runnable{
             int nMessages = random.nextInt(level) + (this.mynode == 0? 1 : 0);
             
             for (int j = 0; j < nMessages; j++)
-                sendMessage(network.selectTarget(mynode));
+                sendMessage(network.selectTargetUniform(mynode));
         }
     }
     
@@ -150,7 +152,7 @@ public class NodeRunner3 implements Runnable{
     }
 
     public void crash() {
-        writeString("I CRASHED");
+        //writeString("I CRASHED");
         this.state.setPassive(true);
         this.mustStop = true;
         this.crashed = true;

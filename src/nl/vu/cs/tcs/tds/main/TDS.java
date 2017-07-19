@@ -8,8 +8,12 @@ import print.color.Ansi.Attribute;
 import print.color.Ansi.BColor;
 import print.color.Ansi.FColor;
 import print.color.ColoredPrinter;
+import util.Option;
 import util.Options;
 import performance.PerformanceLogger;
+
+import static util.Options.*;
+
 public class TDS {
 	
     private TDSOriginal tds1;
@@ -120,7 +124,41 @@ public class TDS {
     	}
     }
     
+    private void printSimInfo() {
+        for(Option opt: Options.instance().getAll()){
+            System.out.print(opt.alias() + " \t");
+            if(opt.getName().equals("-dist")) {
+                switch(Options.instance().get(PROB_DISTRIBUTION)) {
+                    case PROB_DISTRIBUTION_UNIFORM: 
+                        System.out.println("--uniform"); break;
+                    case PROB_DISTRIBUTION_GAUSSIAN:
+                        System.out.println("--gaussian"); break;
+                }
+            } else if (opt.getName().equals("-strategy")) {
+                switch(Options.instance().get(ACTIVITY_STRATEGY)) {
+                    case ACTIVITY_STRATEGY_COMPUTE_SEND: 
+                        System.out.println("--compute-send"); break;
+                    case ACTIVITY_STRATEGY_N_ACTIVITIES:
+                        System.out.println("--n-activities"); break;
+                }
+                
+            } else if (opt.getName().equals("-batype")) {
+                switch(Options.instance().get(BASIC_ALGO_TYPE)) {
+                    case BASIC_ALGO_CENTRALIZED: 
+                        System.out.println("--centralized"); break;
+                    case BASIC_ALGO_DECENTRALIZED_EVEN:
+                        System.out.println("--even-nodes-active"); break;
+                    case BASIC_ALGO_DECENTRALIZED_RANDOM:
+                        System.out.println("--random-nodes-active"); break;
+                }
+            } else {
+                System.out.println(" \t--" + Options.instance().get(opt.getId()));
+            }
+        }
+    }
+    
     public void start(){
+        printSimInfo();
     	if(Options.instance().get(Options.VERSION) == 0){
     		tds1 = new TDSOriginal(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));
     		tds2 = new TDSImproved(Options.instance().get(Options.NUM_OF_NODES), Options.instance().get(Options.MAX_WAIT));

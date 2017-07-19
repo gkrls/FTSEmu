@@ -97,6 +97,25 @@ public class PerformanceLogger {
             default: return;
         }
     }
+	
+	public synchronized void setInitiallyActive(int ia, int version) {
+	    switch(version) {
+    	    case 2: tds2.setInitiallyActive(ia);
+    	    case 3: tds3.setInitiallyActive(ia);
+    	    default:
+    	        tds1.setInitiallyActive(1);
+	    }
+	}
+	
+	public synchronized int getInitiallyActive(int version) {
+	       switch(version) {
+           case 2: return tds2.getInitiallyActive();
+           case 3: return tds3.getInitiallyActive();
+           case 1: return tds1.getInitiallyActive();
+           default:
+               return -1;
+       }
+	}
     
     //Make sure a copy of the token is passed
     //ConcurrentModificationException is possible otherwise
@@ -134,15 +153,15 @@ public class PerformanceLogger {
         
         if(!folder.exists()){ folder.mkdirs(); }
         
-        String s = tds1.getTotalTokens() + "#" + tds1.getExtraTokens() + "#" + tds1.meanProcTime()  + "#" + "" + "#"
-                 + tds2.getTotalTokens() + "#" + tds2.getExtraTokens() + "#" + tds2.meanProcTime()  + "#" + "" + "#"
-                 + tds3.getTotalTokens() + "#" + tds3.getExtraTokens() + "#" + tds3.meanProcTime()  + "#" + tds3.getTotalBackupTokens() + "#" + tds3.hasTimedOut();
+        String s = tds1.getInitiallyActive() + "#" + tds1.getTotalTokens() + "#" + tds1.getExtraTokens() + "#" + tds1.meanProcTime()  + "#" + "" + "#"
+                 + tds2.getInitiallyActive() + "#" + tds2.getTotalTokens() + "#" + tds2.getExtraTokens() + "#" + tds2.meanProcTime()  + "#" + "" + "#"
+                 + tds3.getInitiallyActive() + "#" + tds3.getTotalTokens() + "#" + tds3.getExtraTokens() + "#" + tds3.meanProcTime()  + "#" + tds3.getTotalBackupTokens() + "#" + tds3.hasTimedOut();
 
         if(!f.exists()) {
             CSVWriter writer = new CSVWriter(new FileWriter(f, true), '\t');
-            String[] titles = { "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
-	                            "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
-	                            "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
+            String[] titles = { "O-FSS init-a", "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
+                                "I-FSS init-a", "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
+                                "FTS init-a", "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
             writer.writeNext(titles);
             writer.writeNext(s.split("#"));
             writer.close();
@@ -158,9 +177,9 @@ public class PerformanceLogger {
 	    File f = new File("csv/"+CSV_FILE);
 	    if (folder.exists() && f.exists()) {
 	        CSVWriter writer = new CSVWriter(new FileWriter(f, false), '\t');
-	        String[] titles = { "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
-                                "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
-                                "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
+            String[] titles = { "O-FSS init-a", "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
+                    "I-FSS init-a", "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
+                    "FTS init-a", "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
 	        writer.writeNext(titles);
 	        writer.close();
 	    }

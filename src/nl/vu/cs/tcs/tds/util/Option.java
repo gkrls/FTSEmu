@@ -9,13 +9,15 @@ public class Option {
 	private String opt;
 	private boolean expectValue;
 	private int value;
+	private String alias;
 	
 	
-	public Option(int id, String opt, boolean expectValue, int value){
+	public Option(int id, String opt, boolean expectValue, int value, String alias){
 		this.id = id;
 		this.opt = opt;
 		this.expectValue = expectValue;
 		this.value = value;
+		this.alias = alias;
 	}
 	
 	public String getName(){
@@ -37,5 +39,9 @@ public class Option {
 	@Override
 	public String toString(){
 		return opt + "\t" + value;
+	}
+	
+	public String alias() {
+	    return this.alias;
 	}
 }

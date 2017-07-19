@@ -76,19 +76,19 @@ public class Options {
 	
 	public void init(){
 		opts = new ArrayList<Option>();
-		opts.add(new Option(Options.NUM_OF_NODES, "-n", true, DEFAULT_NUM_OF_NODES));
-		opts.add(new Option(Options.LOG, "-log", false, DEFAULT_LOG));
-		opts.add(new Option(Options.MAX_WAIT, "-w", true, DEFAULT_MAX_WAIT));
-		opts.add(new Option(Options.ACTIVITY_LEVEL, "-l", true, DEFAULT_ACTIVITY_LEVEL));
-		opts.add(new Option(Options.USAGE, "-h", false, DEFAULT_USAGE));
-		opts.add(new Option(Options.VERBOSE, "-v", false, DEFAULT_VERBOSE));
-		opts.add(new Option(Options.CSV, "-csv", false, DEFAULT_CSV));
-		opts.add(new Option(Options.FLUSH_CSV, "-f", false, DEFAULT_CSV_FLUSH));
-		opts.add(new Option(Options.VERSION, "-ver", true, DEFAULT_VERSION));
-		opts.add(new Option(Options.CRASHED_NODES, "-c", true, DEFAULT_CRUSHED_NODES));
-		opts.add(new Option(Options.PROB_DISTRIBUTION, "-dist", false, DEFAULT_PROB_DISTRIBUTION));
-		opts.add(new Option(Options.ACTIVITY_STRATEGY, "-strategy", false, DEFAULT_ACTIVITY_STRATEGY));
-		opts.add(new Option(Options.BASIC_ALGO_TYPE, "-batype", false, DEFAULT_BASIC_ALGO_TYPE));
+		opts.add(new Option(Options.NUM_OF_NODES, "-n", true, DEFAULT_NUM_OF_NODES, "network-size"));
+		opts.add(new Option(Options.LOG, "-log", false, DEFAULT_LOG, "enable-logging"));
+		opts.add(new Option(Options.MAX_WAIT, "-w", true, DEFAULT_MAX_WAIT, "max-wait"));
+		opts.add(new Option(Options.ACTIVITY_LEVEL, "-l", true, DEFAULT_ACTIVITY_LEVEL, "activity-level"));
+		opts.add(new Option(Options.USAGE, "-h", false, DEFAULT_USAGE, "print-usage"));
+		opts.add(new Option(Options.VERBOSE, "-v", false, DEFAULT_VERBOSE, "verbose"));
+		opts.add(new Option(Options.CSV, "-csv", false, DEFAULT_CSV, "write-to-csv"));
+		opts.add(new Option(Options.FLUSH_CSV, "-f", false, DEFAULT_CSV_FLUSH, "flush-csv"));
+		opts.add(new Option(Options.VERSION, "-ver", true, DEFAULT_VERSION, "version"));
+		opts.add(new Option(Options.CRASHED_NODES, "-c", true, DEFAULT_CRUSHED_NODES, "crashed-nodes"));
+		opts.add(new Option(Options.PROB_DISTRIBUTION, "-dist", false, DEFAULT_PROB_DISTRIBUTION, "probability-distr"));
+		opts.add(new Option(Options.ACTIVITY_STRATEGY, "-strategy", false, DEFAULT_ACTIVITY_STRATEGY, "activity-strategy"));
+		opts.add(new Option(Options.BASIC_ALGO_TYPE, "-batype", false, DEFAULT_BASIC_ALGO_TYPE, "basic-algo-type"));
 	}
 	
 	public static Options instance(){
@@ -112,6 +112,10 @@ public class Options {
 			if(opt.getName().equals(name))
 				return opt;
 		return null;
+	}
+	
+	public ArrayList<Option> getAll() {
+	    return instance.opts;
 	}
 	
 	private void rangeCheck(int option, int value){
