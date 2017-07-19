@@ -159,9 +159,9 @@ public class Network3 {
         }, "PassiveRegister3");
     }
     
-    public void registerPassive(int node){
-        this.crashed.add(node);
-    }
+//    public void registerPassive(int node){
+//        this.crashed.add(node);
+//    }
     
     public long getLastPassive(){
         return this.lastPassive;
