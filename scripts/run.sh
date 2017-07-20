@@ -2,7 +2,7 @@
 
 
 ### CONFIG ###
-VERSION=2
+VERSION=23
 NODES=32
 C=""
 W=200000
