@@ -207,7 +207,7 @@ public class Options {
 		}
 		if(option == Options.BASIC_ALGO_TYPE) {
 		    if(value != BASIC_ALGO_CENTRALIZED && value != BASIC_ALGO_DECENTRALIZED_EVEN && value != BASIC_ALGO_DECENTRALIZED_RANDOM) {
-		        System.out.println("Use 1 (centralize) or 2 (decentralized) for basic algorithm type");
+		        System.out.println("Use 1 (centralized) or 2 (decentralized) for basic algorithm type");
 		        System.exit(1);
 		    }
 		}

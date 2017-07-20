@@ -36,25 +36,7 @@ public class PerformanceLogger {
 		tds3 = new Performance(3);
 		//nodesReceivingToken.add(Options.DEFAULT_NUM_OF_NODES - 1); //Add first initiator. Has to be fixed when Options is finished
 		
-		if (Options.instance().get(Options.VERSION) == 0) {
-		    fileVersionString = "O,I,FT";
-		} else {
-		    String versionString = String.valueOf(Options.instance().get(VERSION));
-		    if (versionString.contains("1")) fileVersionString += "O,";
-		    if (versionString.contains("2")) fileVersionString += "I,";
-		    if (versionString.contains("3")) fileVersionString += "FT,";
-		    fileVersionString = fileVersionString.substring(0, fileVersionString.length() - 1);
-		}
-		
-		String includeCi = fileVersionString.contains("FT") ? 
-		        (Options.instance().get(CRASHING_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_GAUSSIAN? "ci-gaus" : "ci-uni") : "";
-		        
-		CSV_FILE = "[ " + fileVersionString + " ]" + "__" +
-	            Options.instance().get(NUM_OF_NODES) + "-" +
-	            (Options.instance().get(CRASHING_NODES) == -1? "Rnd" : Options.instance().get(CRASHING_NODES))+ "__" +
-	            (Options.instance().get(ACTIVITY_STRATEGY) == ACTIVITY_STRATEGY_COMPUTE_SEND? "compute-send": "n-activities") + "__" +
-	            (Options.instance().get(PROB_DISTRIBUTION) == PROB_DISTRIBUTION_UNIFORM? "dist-uni": "dist-gaus") + "__" + includeCi + "__" +
-	            (Options.instance().get(AVERAGE_NETWORK_LATENCY)) + "ms_.csv";
+
 	
 	}
 	
@@ -156,6 +138,33 @@ public class PerformanceLogger {
 	
 	
     public synchronized void writeToCSV() throws IOException {
+        if (Options.instance().get(Options.VERSION) == 0) {
+            fileVersionString = "O,I,FT";
+        } else {
+            String versionString = String.valueOf(Options.instance().get(VERSION));
+            if (versionString.contains("1")) fileVersionString += "O,";
+            if (versionString.contains("2")) fileVersionString += "I,";
+            if (versionString.contains("3")) fileVersionString += "FT,";
+            fileVersionString = fileVersionString.substring(0, fileVersionString.length() - 1);
+        }
+        
+        String includeCi = fileVersionString.contains("FT") ? 
+                (Options.instance().get(CRASHING_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_GAUSSIAN? "ci-gaus" : "ci-uni") : "";
+        
+        String algoType = "";
+        switch(Options.instance().get(Options.BASIC_ALGO_TYPE)) {
+            case Options.BASIC_ALGO_CENTRALIZED: algoType = "single"; break;
+            case Options.BASIC_ALGO_DECENTRALIZED_EVEN: algoType = "even"; break;
+            case Options.BASIC_ALGO_DECENTRALIZED_RANDOM: algoType = "random"; break;
+        }
+                
+        CSV_FILE = "[ " + fileVersionString + " ]" + "__" +
+                Options.instance().get(NUM_OF_NODES) + "-" +
+                (Options.instance().get(CRASHING_NODES) == -1? "Rnd" : Options.instance().get(CRASHING_NODES))+ "__" +
+                (Options.instance().get(ACTIVITY_STRATEGY) == ACTIVITY_STRATEGY_COMPUTE_SEND? "compute-send": "n-activities") + "__" +
+                (Options.instance().get(PROB_DISTRIBUTION) == PROB_DISTRIBUTION_UNIFORM? "dist-uni": "dist-gaus") + "__" + includeCi + "__" +
+                (Options.instance().get(AVERAGE_NETWORK_LATENCY)) + "ms__" + algoType + ".csv";
+        
         File folder = new File(Options.CSV_FOLDER + "/");
         File f = new File(Options.CSV_FOLDER + "/" + CSV_FILE);
         
