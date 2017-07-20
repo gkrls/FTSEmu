@@ -25,6 +25,7 @@ public class Performance {
 	private int tokensUpToTerm;
 	private boolean timeout;
 	private int initiallyActive;
+	private int crashedNodes;
 	
 	private int totalBackupTokens; //ft only
 	private int backupTokensUpToTerm;//ft only
@@ -38,6 +39,7 @@ public class Performance {
 		this.timeout = false;
 		times = new ConcurrentLinkedQueue<Long>();
 		initiallyActive = -1;
+		this.crashedNodes = 0;
 	}
 	
 	public synchronized void incTokens(){
@@ -50,6 +52,14 @@ public class Performance {
 	
 	public boolean hasTimedOut() {
 	    return this.timeout;
+	}
+	
+	public void setCrashedNodes(int c){
+	    this.crashedNodes = c;
+	}
+	
+	public int getNumOfCrashedNodes() {
+	    return this.crashedNodes;
 	}
 	
 	public int getTotalTokens(){

@@ -45,11 +45,16 @@ public class PerformanceLogger {
 		    if (versionString.contains("3")) fileVersionString += "FT,";
 		    fileVersionString = fileVersionString.substring(0, fileVersionString.length() - 1);
 		}
+		
+		String includeCi = fileVersionString.contains("FT") ? 
+		        (Options.instance().get(CRASHING_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_GAUSSIAN? "ci-gaus" : "ci-uni") : "";
+		        
 		CSV_FILE = "[ " + fileVersionString + " ]" + "__" +
 	            Options.instance().get(NUM_OF_NODES) + "-" +
-	            Options.instance().get(CRASHING_NODES)+ "__" +
+	            (Options.instance().get(CRASHING_NODES) == -1? "Rnd" : Options.instance().get(CRASHING_NODES))+ "__" +
 	            (Options.instance().get(ACTIVITY_STRATEGY) == ACTIVITY_STRATEGY_COMPUTE_SEND? "compute-send": "n-activities") + "__" +
-	            (Options.instance().get(PROB_DISTRIBUTION) == PROB_DISTRIBUTION_UNIFORM? "uniform": "gaussian") + ".csv";
+	            (Options.instance().get(PROB_DISTRIBUTION) == PROB_DISTRIBUTION_UNIFORM? "dist-uni": "dist-gaus") + "__" + includeCi + "__" +
+	            (Options.instance().get(AVERAGE_NETWORK_LATENCY)) + "ms_.csv";
 	
 	}
 	
@@ -144,6 +149,10 @@ public class PerformanceLogger {
             default: return;
         }
     }
+    
+    public void setNumCrashedNodes(int c) {
+        tds3.setCrashedNodes(c);
+    }
 	
 	
     public synchronized void writeToCSV() throws IOException {
@@ -152,16 +161,19 @@ public class PerformanceLogger {
         File f = new File("csv/"+CSV_FILE);
         
         if(!folder.exists()){ folder.mkdirs(); }
+
         
         String s = tds1.getInitiallyActive() + "#" + tds1.getTotalTokens() + "#" + tds1.getExtraTokens() + "#" + tds1.meanProcTime()  + "#" + "" + "#"
                  + tds2.getInitiallyActive() + "#" + tds2.getTotalTokens() + "#" + tds2.getExtraTokens() + "#" + tds2.meanProcTime()  + "#" + "" + "#"
-                 + tds3.getInitiallyActive() + "#" + tds3.getTotalTokens() + "#" + tds3.getExtraTokens() + "#" + tds3.meanProcTime()  + "#" + tds3.getTotalBackupTokens() + "#" + tds3.hasTimedOut();
+                 + tds3.getInitiallyActive() + "#" + tds3.getTotalTokens() + "#" + tds3.getExtraTokens() + "#" + tds3.meanProcTime()  + "#" 
+                 + tds3.getTotalBackupTokens() + "#" + tds3.hasTimedOut() + "#" + tds3.getNumOfCrashedNodes() + "#" 
+                 + (((double)tds3.getNumOfCrashedNodes()) / Options.instance().get(NUM_OF_NODES)) * 100;
 
         if(!f.exists()) {
             CSVWriter writer = new CSVWriter(new FileWriter(f, true), '\t');
             String[] titles = { "O-FSS init-a", "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
                                 "I-FSS init-a", "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
-                                "FTS init-a", "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
+                                "FTS init-a", "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT", "C", "C/N*100"};
             writer.writeNext(titles);
             writer.writeNext(s.split("#"));
             writer.close();
@@ -179,7 +191,7 @@ public class PerformanceLogger {
 	        CSVWriter writer = new CSVWriter(new FileWriter(f, false), '\t');
             String[] titles = { "O-FSS init-a", "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
                     "I-FSS init-a", "I-FSS MTC", "I-FSS METC", "I-FSS MPT", " -----",
-                    "FTS init-a", "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT"};
+                    "FTS init-a", "FTS MTC", "FTS METC", "FTS MPT", "FTS MBTC", "FTS TIMEOUT", "C", "C/N*100"};
 	        writer.writeNext(titles);
 	        writer.close();
 	    }

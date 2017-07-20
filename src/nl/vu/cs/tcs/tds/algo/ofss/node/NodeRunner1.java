@@ -74,7 +74,6 @@ public class NodeRunner1 implements Runnable {
         this.state.decCount();
         this.state.setPassive(false);
         this.isPassive = false;
-        //notifyAll();
         this.state.setColor(Color.BLACK);
         notifyAll();
     }
@@ -112,11 +111,7 @@ public class NodeRunner1 implements Runnable {
             
             prober.nodeRunnerStopped();
             
-            synchronized(this){
-            	//not removing it yet. Have to check if isPassive is checked somewhere!!
-            	isPassive = true;
-            	notifyAll();
-            }
+            synchronized(this){ isPassive = true; notifyAll(); }
             
             state.setPassive(true);
             
@@ -197,7 +192,7 @@ public class NodeRunner1 implements Runnable {
             if ( distribution == PROB_DISTRIBUTION_UNIFORM ) {
 
                 timeToSleep = random.nextInt((UNIFORM_COMPUTE_MAX - UNIFORM_COMPUTE_MIN) + UNIFORM_COMPUTE_MIN);
-                numOfMessages = random.nextInt((UNIFORM_MESSAGES_MAX - UNIFORM_MESSAGES_MIN) + UNIFORM_MESSAGES_MIN + 1);
+                numOfMessages = random.nextInt((UNIFORM_MESSAGES_MAX - UNIFORM_MESSAGES_MIN) + UNIFORM_MESSAGES_MIN);
                 
             } else {
                 

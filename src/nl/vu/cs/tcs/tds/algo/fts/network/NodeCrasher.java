@@ -7,6 +7,7 @@ import java.util.Random;
 import ibis.util.ThreadPool;
 import util.Options;
 import main.TDS;
+import performance.PerformanceLogger;
 
 import static util.Options.*;
 
@@ -64,6 +65,8 @@ public class NodeCrasher {
         }
         
         TDS.writeString(0, " [FTS]\tWill crash " + numCrashedNodes + " nodes: " + Arrays.toString(crashedNodes));
+        
+        PerformanceLogger.instance().setNumCrashedNodes(numCrashedNodes);
         
         if (Options.instance().get(CRASHING_NODES_INTERVAL) == CRASHING_NODES_INTERVAL_UNIFORM) {
             int delay;
