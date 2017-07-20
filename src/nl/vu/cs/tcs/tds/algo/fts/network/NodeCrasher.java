@@ -11,6 +11,25 @@ import performance.PerformanceLogger;
 
 import static util.Options.*;
 
+/**
+ * A NodeCrasher is invoked at the beginning of the simulation. It's job is to:
+ * 
+ * 1) Select a number of nodes to crash (if -c without parameters is passed) or crash 
+ *    the number of nodes n passed in -c
+ * 2) Create a list of nodes that will crash and crash them one at a time
+ * 3) For each about-to-crash node choose some number of ms to wait before crashing it. This
+ *    value depends on the value passed to -ci arg
+ *       - If 1 the interval is uniformly random between UNIFORM_CRASHING_NODES_INTERVAL_MIN 
+ *         and UNIFORM_CRASHING_NODES_INTERVAL_MAX
+ *       - If 2 the interval is under Gaussian distribution with mean GAUSSIAN_CRASHING_NODES_INTERVAL_MU
+ *         and standard deviation GAUSSIAN_CRASHING_NODES_INTERVAL_SD
+ *       - If x the interval is has a fix value x
+ * 4) After the wait a random node is notified. So far there's no strategy on notification. The choise
+ *    of a node is uniformly random
+ *     
+ * @author gkarlos
+ *
+ */
 public class NodeCrasher {
     
     private Network3 network;
@@ -124,7 +143,17 @@ public class NodeCrasher {
         }
     }
 
-
+    /**
+     * This method spawns a thread and attempts to notify all nodes 
+     * in the network (expect the one that just crashed) about the crash.
+     * 
+     * There's no notification strategy option (for now).
+     * The next node to notify is randomly chosen from the pool of active nodes.
+     * 
+     * @param crashedNode
+     * @param ignoreCrashed
+     * @throws NodeCrasherStopException
+     */
     private void notifyNodesRandomly(int crashedNode, int[] ignoreCrashed) throws NodeCrasherStopException{
         ThreadPool.createNew(() -> {
             Random random = new Random();

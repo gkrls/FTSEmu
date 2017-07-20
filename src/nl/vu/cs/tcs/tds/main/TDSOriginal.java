@@ -45,9 +45,12 @@ public class TDSOriginal implements Runnable {
 	}
 	
 	public void run(){
-
+	    /* We only have 1 -batype here as OFSS cannot only handle a single active node at the beginning */
 		for(int i = 0; i < nnodes; i++)
 			nodeRunners[i] = new NodeRunner1(i, nnodes, network, i == 0);
+		
+		
+		TDS.writeString(0, " [OFSS ]\tInitially Active: 1 (single)");
 		
 		network.waitForAllNodes();
 		waitTillDone();

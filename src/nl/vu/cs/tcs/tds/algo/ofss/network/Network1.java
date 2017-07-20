@@ -1,10 +1,14 @@
 package algo.ofss.network;
 
 
+import static util.Options.AVERAGE_NETWORK_LATENCY;
+import static util.Options.AVERAGE_NETWORK_LATENCY_MAX;
+import static util.Options.AVERAGE_NETWORK_LATENCY_MIN;
+import static util.Options.NETWORK_LATENCY_SD;
+
 import java.util.Random;
 
 import ibis.util.ThreadPool;
-import main.TDS;
 import performance.PerformanceLogger;
 import algo.ofss.node.NodeMessage1;
 import algo.ofss.node.NodeRunner1;
@@ -17,85 +21,102 @@ public class Network1 {
     private final NodeRunner1[] nodeRunners;
     private final Prober1[] probers;
     private int nodeCount = 0;
-    private Random random = new Random();
+    private Random random;
     protected long lastPassive;
     
-    private int tokenLastVisited;
-
     public Network1(int nnodes) {
         this.nnodes = nnodes;
         nodeRunners = new NodeRunner1[nnodes];
         probers = new Prober1[nnodes];
-        this.tokenLastVisited = -1;
-    }
-    
-    public synchronized int tokenLastVisited(){
-    	return this.tokenLastVisited;
+        random = new Random();
     }
     
 
     public synchronized void waitForAllNodes() {
         while (nodeCount < nnodes) {
-            try { 
-                wait();
-            } catch (InterruptedException e) {
-                // ignore
-            }
+            try { wait(); } catch (InterruptedException e) { /* ignore */ }
         }
-        for (NodeRunner1 r : nodeRunners) {
-            r.start();
-        }
+        
+        /* start the nodes */
+        for (NodeRunner1 r : nodeRunners) r.start();
     }
-
+    
+    /**
+     * Once a node is created this method is called to let the network learn <br/>
+     * about it and attach a prober to it. <br/><br/>
+     * 
+     * Called by the NodeRunner constructor like this: <br/>
+     * <code>
+     *    network.registerNode(this);
+     * </code> 
+     * 
+     * @param nodeRunner
+     */
     public synchronized void registerNode(NodeRunner1 nodeRunner) {
         nodeCount++;
         nodeRunners[nodeRunner.getId()] = nodeRunner;
         
         probers[nodeRunner.getId()] = new Prober1(nodeRunner.getId(), nnodes, this, nodeRunner);
         nodeRunner.attachProber(probers[nodeRunner.getId()]);
+        
+        /* We registered the last node. Let waitForAllNodes() start them all now */
         if (nodeCount == nnodes) {
             notifyAll();
         }
+        
     }
 
-    // Send message with random delay. Execute in separate thread to not delay the sender with it.
+    /**
+     * Send a basic message with random delay. <br/>
+     * The delay has Gaussian distribution with mean {@code Options.AVERAGE_NETWORK_LATENCY} <br/>
+     * and Standard Deviation {@code Options.NETWORK_LATENCY_SD} <br/>
+     * Execute in separate thread to not delay the sender with it.
+     * 
+     * @param destination
+     * @param nodeMessage
+     */
     public void sendMessage(final int destination, final NodeMessage1 nodeMessage) {
-        final int delay = random.nextInt(50);
-        //PerformanceLogger.instance().addMessage(nodeMessage, nodeRunners[destination]);
-        ThreadPool.createNew(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                nodeRunners[destination].receiveMessage(nodeMessage);
-            }
-        }, "MessageSender1");
+        /* choose network delay */
+        int d = (int) Math.round(random.nextGaussian() * NETWORK_LATENCY_SD + AVERAGE_NETWORK_LATENCY);
+        if (d < AVERAGE_NETWORK_LATENCY_MIN) d = AVERAGE_NETWORK_LATENCY_MIN;
+        else if (d > AVERAGE_NETWORK_LATENCY_MAX) d = AVERAGE_NETWORK_LATENCY_MAX;
+        final int delay = d;
+        
+        ThreadPool.createNew(() -> {
+            try { Thread.sleep(delay); } catch (InterruptedException e) { /* ignore */ }
+            nodeRunners[destination].receiveMessage(nodeMessage);
+        }, "BasicMessageSender1");
     }
 
+
+
+    /**
+     * Send a control message (in this case the token) with random delay. <br/>
+     * The delay has Gaussian distribution with mean {@code Options.AVERAGE_NETWORK_LATENCY} <br/>
+     * and Standard Deviation {@code Options.NETWORK_LATENCY_SD} <br/>
+     * Execute in separate thread to not delay the sender with it.
+     * 
+     * @param destination
+     * @param nodeMessage
+     */
+    public void sendProbeMessage(final int destination, final ProbeMessage1 probeMessage) {
+        /* choose network delay */
+        int d = (int) Math.round(random.nextGaussian() * NETWORK_LATENCY_SD + AVERAGE_NETWORK_LATENCY);
+        if (d < AVERAGE_NETWORK_LATENCY_MIN) d = AVERAGE_NETWORK_LATENCY_MIN;
+        else if (d > AVERAGE_NETWORK_LATENCY_MAX) d = AVERAGE_NETWORK_LATENCY_MAX;
+        final int delay = d;
+        
+        ThreadPool.createNew(() -> {
+            try { Thread.sleep(delay); } catch (InterruptedException e) { /* ignore */}
+            probers[destination].receiveMessage(probeMessage);
+        }, "ProbeSender1");
+    }
+    
     // To be called when termination is detected.
     public void killNodes() {
         for (NodeRunner1 r : nodeRunners) {
             r.stopRunning();
         }
-    }
-
-    // Send message with random delay. Execute in separate thread to not delay the sender with it.
-    public void sendProbeMessage(final int destination, final ProbeMessage1 probeMessage) {
-        final int delay = random.nextInt(50);
-        ThreadPool.createNew(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                probers[destination].receiveMessage(probeMessage);
-            }
-        }, "ProbeSender1");
     }
 
     // Find a target for a message from the specified node.

@@ -27,8 +27,7 @@ public class Network3 {
     private Random random;
     /* volatile maybe not needed */
     private volatile boolean stopAll;
-    private int tokenLastVisited;
-    
+
     protected long lastPassive;
     
     
@@ -43,22 +42,35 @@ public class Network3 {
         this.nc = new NodeCrasher(this, nnodes);
         this.crashed = new HashSet<Integer>();
         this.stopAll = false;
-        this.tokenLastVisited = -1;
     }
     
-    public synchronized void tokenLastVisited(int node) {
-        this.tokenLastVisited = node;
-    }
+
     
     public synchronized void waitForAllNodes() {
+        
         while(nodeCount < nnodes){
             try { wait(); } catch (InterruptedException e) {}
         }
         
+        /* start the nodes */
         for(NodeRunner3 r: nodeRunners) r.start();
+        
+        /* start the node-crasher */
         nc.start();
     }
     
+
+    /**
+     * Once a node is created this method is called to let the network learn <br/>
+     * about it and attach a prober and a failure detector to it. <br/><br/>
+     * 
+     * Called by the NodeRunner constructor like this: <br/>
+     * <code>
+     *    network.registerNode(this);
+     * </code> 
+     * 
+     * @param nodeRunner
+     */
     public synchronized void registerNode(NodeRunner3 nodeRunner) {
         nodeCount++;
         nodeRunners[nodeRunner.getId()] = nodeRunner;
@@ -67,13 +79,29 @@ public class Network3 {
         fds[nodeRunner.getId()].linkWithProber(probers[nodeRunner.getId()]);
         
         nodeRunner.attachProber(probers[nodeRunner.getId()]);
-        if(nodeCount == nnodes) { notifyAll(); }
+        
+        /* We registered the last node. Let waitForAllNodes() start them all now */
+        if(nodeCount == nnodes) { 
+            notifyAll(); 
+        }
     }
     
+    /**
+     * Send message with random delay. <br/>
+     * The delay has Gaussian distribution with mean {@code Options.AVERAGE_NETWORK_LATENCY} <br/>
+     * and Standard Deviation {@code Options.NETWORK_LATENCY_SD} <br/>
+     * Execute in separate thread to not delay the sender with it.
+     * 
+     * @param destination
+     * @param nodeMessage
+     */
     public void sendMessage(final int dest, final NodeMessage3 msg) {
+        /* Do not send to nodes that we know have crashed. We could possibly
+         * through an exception or return some value here to let the application 
+         * know that this occurred and possibly take further action */
         if(!crashed.contains(dest)) {
             
-            /** choose network delay **/
+            /* choose network delay */
             int d = (int) Math.round(random.nextGaussian() * NETWORK_LATENCY_SD + AVERAGE_NETWORK_LATENCY);
             if (d < AVERAGE_NETWORK_LATENCY_MIN) d = AVERAGE_NETWORK_LATENCY_MIN;
             else if (d > AVERAGE_NETWORK_LATENCY_MAX) d = AVERAGE_NETWORK_LATENCY_MAX;
@@ -82,10 +110,36 @@ public class Network3 {
             ThreadPool.createNew(() -> {
                 try { Thread.sleep(delay); } catch (InterruptedException e) {}
                 nodeRunners[dest].receiveMessage(msg);
-            }, "Sender3");
+            }, "BasicMessageSender3");
         }
     }
     
+    /**
+     * Send a control message (in this case the token) with random delay. <br/>
+     * The delay has Gaussian distribution with mean {@code Options.AVERAGE_NETWORK_LATENCY} <br/>
+     * and Standard Deviation {@code Options.NETWORK_LATENCY_SD} <br/>
+     * Execute in separate thread to not delay the sender with it.
+     * 
+     * @param destination
+     * @param nodeMessage
+     */
+    public void sendProbeMessage(ProbeMessage3 token, int dest) {
+        /* choose network delay */
+        int d = (int) Math.round(random.nextGaussian() * NETWORK_LATENCY_SD + AVERAGE_NETWORK_LATENCY);
+        if (d < AVERAGE_NETWORK_LATENCY_MIN) d = AVERAGE_NETWORK_LATENCY_MIN;
+        else if (d > AVERAGE_NETWORK_LATENCY_MAX) d = AVERAGE_NETWORK_LATENCY_MAX;
+        final int delay = d;
+        
+        ThreadPool.createNew(() -> {
+            try { Thread.sleep(delay); } catch(InterruptedException e) {}
+            probers[dest].receiveMessage(token);
+        }, "ProbeSender3");
+    }
+    
+    /**
+     * This is not a real message. This method is the equivalent of a node learning of some
+     * other node's crash
+     */
     public void sendCrashMessage(int dest, int crashedNode) throws NodeCrasherStopException {
         
         if(stopAll) 
@@ -207,18 +261,7 @@ public class Network3 {
         
     }
 
-    public void sendProbeMessage(ProbeMessage3 token, int dest) {
-        /** choose delay **/
-        int d = (int) Math.round(random.nextGaussian() * NETWORK_LATENCY_SD + AVERAGE_NETWORK_LATENCY);
-        if (d < AVERAGE_NETWORK_LATENCY_MIN) d = AVERAGE_NETWORK_LATENCY_MIN;
-        else if (d > AVERAGE_NETWORK_LATENCY_MAX) d = AVERAGE_NETWORK_LATENCY_MAX;
-        final int delay = d;
-        
-        ThreadPool.createNew(() -> {
-            try { Thread.sleep(delay); } catch(InterruptedException e) {}
-            probers[dest].receiveMessage(token);
-        }, "ProbeSender3");
-    }
+
 
 
 

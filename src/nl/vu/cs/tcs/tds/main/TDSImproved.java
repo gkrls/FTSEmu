@@ -6,6 +6,7 @@ import util.Options;
 
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import algo.ifss.network.Network2;
 import algo.ifss.node.NodeRunner2;
@@ -63,7 +64,10 @@ public class TDSImproved implements Runnable{
                     newActive = random.nextInt(nnodes);
                 initiallyActiveList.add(newActive);
             }
-            System.out.println("RANDOM(" + initiallyActiveCount +"): " + initiallyActiveList.toString() );
+            
+            TDS.writeString(0, " [IFSS ]\tInitially Active: " + initiallyActiveCount+ " (random): " + initiallyActiveList.toString());
+            
+            //System.out.println("RANDOM(" + initiallyActiveCount +"): " + initiallyActiveList.toString() );
             PerformanceLogger.instance().setInitiallyActive(initiallyActiveCount, 2);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
@@ -71,14 +75,22 @@ public class TDSImproved implements Runnable{
             }
 
         } else if (Options.instance().get(BASIC_ALGO_TYPE) == BASIC_ALGO_DECENTRALIZED_EVEN){
-            System.out.println("EVEN");
+   
             PerformanceLogger.instance().setInitiallyActive(nnodes % 2 == 0? nnodes / 2 : ((int) nnodes / 2) + 1, 2);
+            
+            TDS.writeString(0, " [IFSS ]\tInitially Active: " + PerformanceLogger.instance().getInitiallyActive(2) + " (even)");
+            
+            
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner2(i, nnodes, network, i % 2 == 0); 
             }
         } else {
+            
+            TDS.writeString(0, " [IFSS ]\tInitially Active: 1 (single)");
+            
             PerformanceLogger.instance().setInitiallyActive(1, 2);
+            
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner2(i, nnodes, network, i == 0); 

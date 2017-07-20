@@ -8,6 +8,15 @@ import algo.fts.network.Network3;
 import algo.fts.probing.ProbeMessage3;
 import algo.fts.probing.Prober3;
 
+/**
+ * The FailureDetector for a node is invoked after the NodeCrasher informs that node
+ * of another node's crash
+ * 
+ * It has to be linked with a NodeRunner and does work in the receiveCrash() method
+ * 
+ * @author gkarlos
+ *
+ */
 public class FailureDetector {
     
     private int mynode, nnodes;

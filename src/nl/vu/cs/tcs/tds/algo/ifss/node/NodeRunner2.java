@@ -90,9 +90,9 @@ public class NodeRunner2 implements Runnable{
     
     @Override
     public void run() {
-        writeString("Thread started");
+        writeString("Starting...");
         waitUntilStarted();
-        writeString("Node started");
+        writeString("Started");
         
         while(!shouldStop()){
             synchronized(this) {
@@ -121,7 +121,7 @@ public class NodeRunner2 implements Runnable{
     
     private synchronized void waitUntilStarted() {
         while(!started)
-            try { wait(); } catch(InterruptedException e){break;}//maybe remove break
+            try { wait(); } catch(InterruptedException e){break;}
     }
     
     private void activity(int strategy) {

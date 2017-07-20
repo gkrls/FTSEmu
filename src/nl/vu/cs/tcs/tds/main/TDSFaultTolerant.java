@@ -74,7 +74,9 @@ public class TDSFaultTolerant implements Runnable{
                     newActive = random.nextInt(nnodes);
                 initiallyActiveList.add(newActive);
             }
-            System.out.println("RANDOM(" + initiallyActiveCount +"): " + initiallyActiveList.toString() );
+            
+            TDS.writeString(0, " [ FTS ]\tInitially Active: " + initiallyActiveCount+ " (random): " + initiallyActiveList.toString());
+            
             PerformanceLogger.instance().setInitiallyActive(initiallyActiveCount, 2);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
@@ -82,13 +84,18 @@ public class TDSFaultTolerant implements Runnable{
             }
 
         } else if (Options.instance().get(BASIC_ALGO_TYPE) == BASIC_ALGO_DECENTRALIZED_EVEN){
-            System.out.println("EVEN");
+            
+            TDS.writeString(0, " [ FTS ]\tInitially Active: " + PerformanceLogger.instance().getInitiallyActive(2) + " (even)");
+            
             PerformanceLogger.instance().setInitiallyActive(nnodes % 2 == 0? nnodes / 2 : ((int) nnodes / 2) + 1, 2);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner3(i, nnodes, network, i % 2 == 0); 
             }
         } else {
+            
+            TDS.writeString(0, " [ FTS ]\tInitially Active: 1 (single)");
+            
             PerformanceLogger.instance().setInitiallyActive(1, 2);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active

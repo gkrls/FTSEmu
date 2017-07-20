@@ -1,13 +1,9 @@
 package algo.ifss.probing;
 
-import java.io.Serializable;
-
-import ibis.util.ThreadPool;
 import main.TDS;
 import performance.PerformanceLogger;
 import algo.ifss.network.Network2;
 import algo.ifss.node.NodeRunner2;
-import algo.ifss.node.NodeState2;
 
 public class Prober2{
     private final int totalNodes;
@@ -15,7 +11,6 @@ public class Prober2{
     private final Network2 network;
     
     private final NodeRunner2 nodeRunner;
-    private boolean holdsToken = false;
     private boolean waitNodeRunner = false;
     
     public Prober2(int mynode, int totalNodes, Network2 network, NodeRunner2 nodeRunner) {
@@ -51,7 +46,11 @@ public class Prober2{
         
     }
     
-    
+    /**
+     * This method implements the ReceiveToken_i procedure of the algorithm
+     * 
+     * @param token
+     */
     public synchronized void receiveMessage(ProbeMessage2 token) {
         
         this.waitUntilPassive();
@@ -100,11 +99,9 @@ public class Prober2{
     
     
     private void waitUntilPassive() {
-        //this.waitNodeRunner = !this.nodeRunner.isPassive();
         while(!this.nodeRunner.isPassive()) {
-            //synchronized(nodeRunner){
-                writeString("PROBE waiting node for passive");
-                try { wait(); } catch(InterruptedException e) {}             //}
+            writeString("PROBE waiting node for passive");
+            try { wait(); } catch(InterruptedException e) {}
         }
     }
 

@@ -65,7 +65,7 @@ public class NodeRunner3 implements Runnable{
     public synchronized int getNext() { return this.state.getNext(); }
     public boolean isCrashed() { return this.crashed.get(); }
 
-    private void writeString(String s) { TDS.writeString(3, " Node " + mynode + ": \t" + s); }
+    public void writeString(String s) { TDS.writeString(3, " Node " + mynode + ": \t" + s); }
     
     private synchronized boolean shouldStop() { return mustStop; }
     public synchronized void start() {started = true; notifyAll(); }
@@ -272,7 +272,7 @@ public class NodeRunner3 implements Runnable{
     }
     
     private synchronized void waitUntilStarted() {
-        while(!started) try {wait(); } catch(InterruptedException e){}//maybe remove break
+        while(!started) try {wait(); } catch(InterruptedException e){}
     }
 
     public void crash() {

@@ -61,6 +61,8 @@ public class Prober3 {
                 writeString("Received invalid Seq!");
             }
         }else {
+            /* This can happen as it could be the case that the sender did not know
+             * of the crash when sending the message. Just do nothing about it. */
             writeString("I am crashed but was asked to do work. (That's ok)");
         }
     }
@@ -107,9 +109,7 @@ public class Prober3 {
             if(sum == 0) { // Actual termination
                 announce(start);
                 return;
-            }else {
-                writeString("No Term: " + sum);
-            }
+            }else { /* ignore */ }
         }
         
         if(token.getCRASHED().contains(nodeRunner.getNext())) { newSuccessor(); }
@@ -142,6 +142,9 @@ public class Prober3 {
         PerformanceLogger.instance().addTokenBits(3, token.copy());
     }
     
+    /**
+     * This method implements the NewSuccessor_i procedure of the algorithm
+     */
     public void newSuccessor() {
         long start = System.nanoTime();
         HashSet<Integer> crashedReportUnion = new HashSet<Integer>();
@@ -181,7 +184,6 @@ public class Prober3 {
     }
 
     public void waitUntilPassive() {
-        //this.waitNodeRunner = !this.nodeRunner.isPassive();
         while(!this.nodeRunner.isPassive()) {
             writeString("PROBE waiting node for passive");
             try { wait(); } catch(InterruptedException e) {}

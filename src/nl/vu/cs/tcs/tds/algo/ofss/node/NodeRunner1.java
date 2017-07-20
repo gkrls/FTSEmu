@@ -11,18 +11,23 @@ import util.Color;
 
 import static util.Options.*;
 
-// A NodeRunner thread simulates a node that is doing some computation,
-// is sending some messages, or is passive.
-// It can only send messages when it is active, and only becomes
-// active again when it receives a message.
+/**
+ * A NodeRunner thread simulates a node that is doing some computation,         <br/>
+ * is sending some messages, or is passive. It can only send messages           <br/>
+ * when it is active, and only becomes active again when it receives a message. <br/>
+ *  
+ * @author gkarlos
+ *
+ */
+
 public class NodeRunner1 implements Runnable {
 
     private final int mynode;
-    private final int nnodes;
     private boolean mustStop = false;
     private NodeState1 state;
     private final Network1 network;
     private Random random = new Random();
+    private int nnodes;
     private boolean started = false;
     public boolean isPassive = true;
     public Prober1 prober;
