@@ -197,7 +197,7 @@ public class NodeRunner1 implements Runnable {
             if ( distribution == PROB_DISTRIBUTION_UNIFORM ) {
 
                 timeToSleep = random.nextInt((UNIFORM_COMPUTE_MAX - UNIFORM_COMPUTE_MIN) + UNIFORM_COMPUTE_MIN);
-                numOfMessages = random.nextInt((UNIFORM_MESSAGES_MAX - UNIFORM_MESSAGES_MIN) + UNIFORM_MESSAGES_MIN);
+                numOfMessages = random.nextInt((UNIFORM_MESSAGES_MAX - UNIFORM_MESSAGES_MIN) + UNIFORM_MESSAGES_MIN + 1);
                 
             } else {
                 
