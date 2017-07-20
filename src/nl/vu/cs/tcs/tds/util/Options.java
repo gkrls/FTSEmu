@@ -6,6 +6,8 @@ import java.util.stream.IntStream;
 public class Options {
     
     public static final int OPTION_ERR = -12345;
+    
+    public static String CSV_FOLDER = "csv";
 	
 	public static final int NUM_OF_NODES = -1;
 	public static final int LOG = -2;
@@ -317,6 +319,12 @@ public class Options {
 
 	public void parse(String[] args){
 		for(int i = 0; i < args.length; i++){
+		    if (args[i].equals("-folder")) {
+		        Options.CSV_FOLDER = args[i+1];
+		        i++;
+		        continue;
+		    }
+		    
 			int opt = 0;
 			try{
 				opt = parseOptionName(args[i]);

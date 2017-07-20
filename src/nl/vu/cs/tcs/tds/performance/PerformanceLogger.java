@@ -156,9 +156,8 @@ public class PerformanceLogger {
 	
 	
     public synchronized void writeToCSV() throws IOException {
-        File folder = new File("csv/");
-        
-        File f = new File("csv/"+CSV_FILE);
+        File folder = new File(Options.CSV_FOLDER + "/");
+        File f = new File(Options.CSV_FOLDER + "/" + CSV_FILE);
         
         if(!folder.exists()){ folder.mkdirs(); }
 
@@ -185,8 +184,8 @@ public class PerformanceLogger {
 	}
 	
 	public void clearCSV() throws IOException {
-	    File folder = new File("csv/");
-	    File f = new File("csv/"+CSV_FILE);
+	    File folder = new File(Options.CSV_FOLDER + "/");
+	    File f = new File(Options.CSV_FOLDER + "/" + CSV_FILE);
 	    if (folder.exists() && f.exists()) {
 	        CSVWriter writer = new CSVWriter(new FileWriter(f, false), '\t');
             String[] titles = { "O-FSS init-a", "O-FSS MTC", "O-FSS METC", "O-FSS MPT", " -----",
