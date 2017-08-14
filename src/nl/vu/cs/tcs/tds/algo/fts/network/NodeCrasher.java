@@ -46,14 +46,31 @@ public class NodeCrasher {
         this.network = network;
         this.nnodes = nnodes;
         this.random = new Random();
-        numCrashedNodes = Options.instance().get(Options.CRASHING_NODES);
         
-        if (numCrashedNodes == Options.CRASHING_NODES_RANDOM) {
-            numCrashedNodes = random.nextInt(nnodes);
+        
+        if (Options.instance().get(Options.CRASHING_NODES) == Options.CRASHING_NODES_RANDOM) {
+            TDS.writeString(0, " [ FTS ]\tCrashing nodes in random (uniform in [0-N])");
+            this.numCrashedNodes = random.nextInt(nnodes);
+        } else {
             
+            int low = Options.instance().get(Options.CRASHING_NODES_LOW);
+            int high = Options.instance().get(Options.CRASHING_NODES_HIGH);
+            
+            if ( low == high ) {
+                /* exact amount */
+                this.numCrashedNodes = low; 
+            } else {
+                /* make a uniform choice in that range */
+                this.numCrashedNodes = low + random.nextInt(high - low + 1);
+
+            }
+            
+            TDS.writeString(0, " [ FTS ]\tCrashing nodes in Interval: [" + low + "," + high + "] (uniform choice)");
         }
         
+        
         this.crashedNodes = new int[numCrashedNodes];
+        
         for (int i = 0; i < numCrashedNodes; i++) {
             crashedNodes[i] = -1;
         }
@@ -68,9 +85,10 @@ public class NodeCrasher {
         }, "Crasher");
     }
     
-    
-    public void go() {
+    private void chooseNodesToCrash() {
         for (int i = 0; i < numCrashedNodes; i++ ) {
+            
+            /* we will crash the node with this id */
             int newCrash = random.nextInt(nnodes);
             
             /* *
@@ -82,8 +100,14 @@ public class NodeCrasher {
             
             crashedNodes[i] = newCrash;
         }
+
+    }
+    
+    public void go() {
         
-        TDS.writeString(0, " [FTS]\tWill crash " + numCrashedNodes + " nodes: " + Arrays.toString(crashedNodes));
+        chooseNodesToCrash();
+        
+        TDS.writeString(0, " [ FTS ]\tWill crash " + numCrashedNodes + " nodes: " + Arrays.toString(crashedNodes));
         
         PerformanceLogger.instance().setNumCrashedNodes(numCrashedNodes);
         

@@ -18,7 +18,9 @@ public class Options {
 	public static final int CSV = -7;
 	public static final int FLUSH_CSV = -8;
 	public static final int VERSION = -9;
+	
 	public static final int CRASHING_NODES = -10;
+	
 	public static final int PROB_DISTRIBUTION = -11;
 	public static final int ACTIVITY_STRATEGY = -12;
 	public static final int BASIC_ALGO_TYPE = -13;
@@ -26,6 +28,8 @@ public class Options {
 	public static final int CRASH_NOTIFY_INTERVAL = -15;
 	public static final int AVERAGE_NETWORK_LATENCY = -16;
 	public static final int PRINT_INFO = -17;
+	public static final int CRASHING_NODES_LOW = -18;
+	public static final int CRASHING_NODES_HIGH = -19;
 	
 	public static final int PROB_DISTRIBUTION_UNIFORM = 1;
 	public static final int PROB_DISTRIBUTION_GAUSSIAN = 2;
@@ -42,6 +46,7 @@ public class Options {
 	
 	public static final int CRASHING_NODES_NONE = 0;
 	public static final int CRASHING_NODES_RANDOM = -1;
+	public static final int CRASHING_NODES_RANGE = -2;
 	
 	public static final int CRASHING_NODES_INTERVAL_UNIFORM = 1;
 	public static final int CRASHING_NODES_INTERVAL_GAUSSIAN = 2;
@@ -132,6 +137,8 @@ public class Options {
 		opts.add(new Option(Options.CRASHING_NODES_INTERVAL, "-ci", false, DEFAULT_CRASHED_NODES_INTERVAL, "crashing-nodes-interval"));
 		opts.add(new Option(Options.AVERAGE_NETWORK_LATENCY, "-anl", false, DEFAULT_AVERAGE_NETWORK_LATENCY, "average-network-latency"));
 		opts.add(new Option(Options.CRASH_NOTIFY_INTERVAL, "-cni", false, DEFAULT_CRASH_NOTIFY_INTERVAL, "crash-notify-interval"));
+		opts.add(new Option(Options.CRASHING_NODES_LOW, "-cnl", false, 0, "crashing-nodes-range-low"));
+		opts.add(new Option(Options.CRASHING_NODES_HIGH, "-cnh", false, 0, "crashing-nodes-range-high"));
 	}
 	
 	public static Options instance(){
@@ -186,13 +193,13 @@ public class Options {
 				System.exit(1);
 			}
 		}
-		if(option == Options.CRASHING_NODES){
-		    if((value < 0 && value != Options.CRASHING_NODES_RANDOM) || value > Options.instance().get(Options.NUM_OF_NODES) - 1){
-		        System.out.println("Cannot crash less than 0 or more than n-1 nodes");
-                System.exit(1);
-		    }
-		        
-		}
+//		if(option == Options.CRASHING_NODES){
+//		    if((value < 0 && value != Options.CRASHING_NODES_RANDOM) || value > Options.instance().get(Options.NUM_OF_NODES) - 1){
+//		        System.out.println("Cannot crash less than 0 or more than n-1 nodes (" + value + ")");
+//                System.exit(1);
+//		    }
+//		        
+//		}
 		if(option == Options.PROB_DISTRIBUTION) {
 		    if(value != Options.PROB_DISTRIBUTION_GAUSSIAN && value != Options.PROB_DISTRIBUTION_UNIFORM) {
 		        System.out.println("Use 1 (Uniform) or 2(Gaussian) distribution.");
@@ -223,6 +230,18 @@ public class Options {
 		        System.exit(1);
 		    }
 		}
+		if(option == Options.CRASHING_NODES_LOW) {
+		    if ( value < 0 || value > Options.instance().get(NUM_OF_NODES)) {
+		        System.out.println("Invalid crashing nodes interval (low) ");
+		        System.exit(1);
+		    }
+		}
+		if(option == Options.CRASHING_NODES_HIGH) {
+		    if (value >= Options.instance().get(NUM_OF_NODES) || value < 0 || value < Options.instance().get(Options.CRASHING_NODES_LOW)) {
+		        System.out.println("Invalid crashing nodes interval (high) ");
+		        System.exit(1);
+		    }
+		}
 		
 	}
 	
@@ -234,49 +253,54 @@ public class Options {
 		rangeCheck(option, value);
 		if(option == Options.NUM_OF_NODES)
 			getOptByName("-n").setValue(value);
-		
-		if(option == Options.ACTIVITY_LEVEL)
+		else if(option == Options.ACTIVITY_LEVEL)
 			getOptByName("-l").setValue(value);
 		
-		if(option == Options.MAX_WAIT)
+		else if(option == Options.MAX_WAIT)
 			getOptByName("-w").setValue(value);
 		
-		if(option == Options.LOG)
+		else if(option == Options.LOG)
 			getOptByName("-log").setValue(value);
 		
-		if(option == Options.USAGE)
+		else if(option == Options.USAGE)
 			getOptByName("-h").setValue(value);
 		
-		if(option == Options.VERBOSE)
+		else if(option == Options.VERBOSE)
 			getOptByName("-v").setValue(value);
 		
-		if(option == Options.CSV)
+		else if(option == Options.CSV)
 			getOptByName("-csv").setValue(value);
 		
-		if(option == Options.FLUSH_CSV)
+		else if(option == Options.FLUSH_CSV)
 			getOptByName("-f").setValue(value);
-		if(option == Options.VERSION)
+		else if(option == Options.VERSION)
 			getOptByName("-ver").setValue(value);
-		if(option == Options.CRASHING_NODES){
+		else if(option == Options.CRASHING_NODES){
 		    getOptByName("-c").setValue(value);
 		}
-		if(option == Options.PROB_DISTRIBUTION) {
+		else if(option == Options.PROB_DISTRIBUTION) {
 		    getOptByName("-dist").setValue(value);
 		}
-		if(option == Options.ACTIVITY_STRATEGY) {
+		else if(option == Options.ACTIVITY_STRATEGY) {
 		    getOptByName("-strategy").setValue(value);
 		}
-		if(option == Options.BASIC_ALGO_TYPE) {
+		else if(option == Options.BASIC_ALGO_TYPE) {
 		    getOptByName("-batype").setValue(value);
 		}
-		if(option == Options.CRASHING_NODES_INTERVAL){
+		else if(option == Options.CRASHING_NODES_INTERVAL){
 		    getOptByName("-ci").setValue(value);
 		}
-		if(option == Options.AVERAGE_NETWORK_LATENCY) {
+		else if(option == Options.AVERAGE_NETWORK_LATENCY) {
 		    getOptByName("-anl").setValue(value);
 		}
-		if(option == Options.PRINT_INFO) {
+		else if(option == Options.PRINT_INFO) {
 		    getOptByName("-i").setValue(value);
+		}
+		else if(option == Options.CRASHING_NODES_LOW) {
+		    getOptByName("-cnl").setValue(value);
+		}
+		else if(option == Options.CRASHING_NODES_HIGH) {
+		    getOptByName("-cnh").setValue(value);
 		}
 		
 	}
@@ -387,8 +411,17 @@ public class Options {
 					break;
 				case Options.CRASHING_NODES:
 				    try{
-				        this.setOption(Options.CRASHING_NODES, Integer.parseInt(args[i+1]));
+				        this.setOption(Options.CRASHING_NODES, Options.CRASHING_NODES_RANGE);
+				        this.setOption(Options.CRASHING_NODES_LOW, Integer.parseInt(args[i+1]));
 				        i++;
+				        try {
+				            this.setOption(Options.CRASHING_NODES_HIGH, Integer.parseInt(args[i+1]));
+	                        i++;
+				        } catch (Exception e) {
+				            System.out.println("Missing high in crashing nodes range");
+				            System.exit(1);
+				        }
+				        
 				    }catch(Exception e){
 				        //-c flag without arg
 				        this.setOption(Options.CRASHING_NODES, Options.CRASHING_NODES_RANDOM);
