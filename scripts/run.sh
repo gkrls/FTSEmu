@@ -6,12 +6,12 @@ VERSION=23
 NODES=16
 C_LOW=0
 C_HIGH=0
-W=200000
+W=100000
 CSV="csv"
-DIST=1
-STRATEGY=2
-BATYPE=1
-CI=$DIST
+DIST=1       #1 = uniform, 2 = gaussian
+STRATEGY=2   #1 = compute-sleep, 2 = n-activities
+BATYPE=1     #1 = centralized, 2 = decentralized-even, 3 = decentralized-random
+CI=2         #1 = uniform, 2 = gaussian
 LOG=""
 ##############
 
@@ -36,7 +36,7 @@ for i in `seq 1 $NUM_RUNS`;
 do
 	echo -ne "Running test" `expr $i` "of" $NUM_RUNS \\r
 	java -jar $JAR -ver $VERSION -n $NODES -c $C_LOW $C_HIGH -w $W -$CSV -dist $DIST \
-		-strategy $STRATEGY -batype $BATYPE -ci $CI -folder "$OUT_FOLDER/$NODES"
+		 -strategy $STRATEGY -batype $BATYPE -ci $CI -folder "$OUT_FOLDER/$NODES"
 	sleep 2
 done
 
