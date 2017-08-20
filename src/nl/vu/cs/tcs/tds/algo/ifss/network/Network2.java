@@ -94,6 +94,7 @@ public class Network2 {
     
     public void sendFirstProbeMessage(final int dest, final ProbeMessage2 probeMessage) {
         ThreadPool.createNew(() -> {
+            try { Thread.sleep(2000); }catch(InterruptedException e) {} //ugly fix
             probers[dest].receiveFirstMessage(probeMessage);
         }, "ProbeSender2");
     }
