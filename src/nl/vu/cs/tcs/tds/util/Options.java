@@ -373,10 +373,11 @@ public class Options {
 				case Options.VERBOSE:
 					this.setOption(Options.VERBOSE, 1); break;
 				case Options.NUM_OF_NODES:
+				    int val = Integer.parseInt(args[i+1]);
 					try{
-						this.setOption(Options.NUM_OF_NODES, Integer.parseInt(args[i+1]));
+						this.setOption(Options.NUM_OF_NODES, val);
 					}catch(Exception e){
-						System.out.println("Invalid value for option '-n'");
+						System.out.println("Invalid value for option '-n' (" + val +")");
 						System.exit(1);
 					}
 					i++;
