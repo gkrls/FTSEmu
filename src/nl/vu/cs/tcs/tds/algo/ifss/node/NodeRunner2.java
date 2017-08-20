@@ -12,17 +12,12 @@ import static util.Options.*;
 
 public class NodeRunner2 implements Runnable{
     
-    private enum ActivityStrategy {
-        N_ACTIVITIES,
-        SLEEP_SEND
-    }
-    
     private final int mynode;
     private final int nnodes;
     private final NodeState2 state;
     private final Network2 network;
     private boolean mustStop = false;
-    private Random random = new Random();
+    private Random random;
     private boolean started = false;
     private boolean isPassive = true;
     private Prober2 prober;
@@ -33,6 +28,8 @@ public class NodeRunner2 implements Runnable{
         this.nnodes = nnodes;
         this.isPassive = !initiallyActive;
         this.state = new NodeState2(!initiallyActive, mynode, nnodes);
+        this.random = new Random();
+        this.random.setSeed(System.currentTimeMillis() + Double.doubleToLongBits(Math.random()) + this.hashCode());
         network.registerNode(this);
         this.network = network;
         Thread t = new Thread(this);

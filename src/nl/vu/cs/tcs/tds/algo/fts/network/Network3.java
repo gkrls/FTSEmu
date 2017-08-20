@@ -36,6 +36,7 @@ public class Network3 {
         this.nnodes = nnodes;
         this.nodeCount = 0;
         this.random = new Random();
+        this.random.setSeed(System.currentTimeMillis() + Double.doubleToLongBits(Math.random()) + this.hashCode());
         this.nodeRunners = new NodeRunner3[nnodes];
         this.probers = new Prober3[nnodes];
         this.fds = new FailureDetector[nnodes];
@@ -153,7 +154,8 @@ public class Network3 {
             ThreadPool.createNew(() -> {
                 try { 
                 
-                    if(stopAll) return;
+                    if(stopAll)
+                        return;
                     
                     Thread.sleep( Options.instance().get(CRASH_NOTIFY_INTERVAL)
                             + Options.instance().get(AVERAGE_NETWORK_LATENCY)
@@ -163,7 +165,6 @@ public class Network3 {
                 
                 if(stopAll) return;
                 
-                //System.out.println("Node " + dest + " learnt crash of" + crashedNode +" !" );
                 fds[dest].receiveCrash(crashedNode);
                 
             }, "NodeCrasher3");

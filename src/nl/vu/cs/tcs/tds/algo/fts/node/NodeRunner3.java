@@ -33,7 +33,7 @@ public class NodeRunner3 implements Runnable{
     private final NodeState3 state;
     private final Network3 network;
     private boolean mustStop = false;
-    private Random random = new Random();
+    private Random random;
     private boolean started = false;
     private boolean isPassive = false;
     private Prober3 prober;
@@ -47,8 +47,10 @@ public class NodeRunner3 implements Runnable{
         this.nnodes = nnodes;
         this.isPassive = !initiallyActive;
         this.state = new NodeState3(!initiallyActive, mynode, nnodes);
-        network.registerNode(this);
         this.network = network;
+        this.network.registerNode(this);
+        this.random = new Random();
+        this.random.setSeed(System.currentTimeMillis() + Double.doubleToLongBits(Math.random()) + this.hashCode());
         t = new Thread(this);
         t.start();
     }

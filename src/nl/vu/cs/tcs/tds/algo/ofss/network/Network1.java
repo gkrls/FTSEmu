@@ -26,9 +26,10 @@ public class Network1 {
     
     public Network1(int nnodes) {
         this.nnodes = nnodes;
-        nodeRunners = new NodeRunner1[nnodes];
-        probers = new Prober1[nnodes];
-        random = new Random();
+        this.nodeRunners = new NodeRunner1[nnodes];
+        this.probers = new Prober1[nnodes];
+        this.random = new Random();
+        this.random.setSeed(System.currentTimeMillis() + Double.doubleToLongBits(Math.random()) + this.hashCode());
     }
     
 

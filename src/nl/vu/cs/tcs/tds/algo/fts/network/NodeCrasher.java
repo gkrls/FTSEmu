@@ -46,7 +46,7 @@ public class NodeCrasher {
         this.network = network;
         this.nnodes = nnodes;
         this.random = new Random();
-        
+        this.random.setSeed(System.currentTimeMillis() + Double.doubleToLongBits(Math.random()) + this.hashCode());
         
         if (Options.instance().get(Options.CRASHING_NODES) == Options.CRASHING_NODES_RANDOM) {
             TDS.writeString(0, " [ FTS ]\tCrashing nodes in random (uniform in [0-N])");
@@ -180,7 +180,10 @@ public class NodeCrasher {
      */
     private void notifyNodesRandomly(int crashedNode, int[] ignoreCrashed) throws NodeCrasherStopException{
         ThreadPool.createNew(() -> {
-            Random random = new Random();
+            
+            //Random random = new Random();
+            //this.random.setSeed(System.currentTimeMillis() + Double.doubleToLongBits(Math.random()) + this.hashCode() ^ 7);
+            
             try {
                 ArrayList<Integer> notified = new ArrayList<Integer>();
                 

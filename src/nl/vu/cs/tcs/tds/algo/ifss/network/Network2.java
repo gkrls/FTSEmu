@@ -29,6 +29,7 @@ public class Network2 {
         this.nnodes = nnodes;
         nodeCount = 0;
         random = new Random();
+        this.random.setSeed(System.currentTimeMillis() + Double.doubleToLongBits(Math.random()) + this.hashCode());
         nodeRunners = new NodeRunner2[nnodes];
         probers = new Prober2[nnodes];
     }
