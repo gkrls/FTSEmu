@@ -3,6 +3,7 @@ package main;
 import ibis.util.ThreadPool;
 import performance.PerformanceLogger;
 import util.Options;
+import util.Options.VERSIONS;
 
 import static util.Options.BASIC_ALGO_DECENTRALIZED_EVEN;
 import static util.Options.BASIC_ALGO_DECENTRALIZED_RANDOM;
@@ -13,7 +14,6 @@ import java.util.Random;
 
 import algo.fts.network.Network3;
 import algo.fts.node.NodeRunner3;
-import algo.ifss.node.NodeRunner2;
 
 public class TDSFaultTolerant implements Runnable{
     
@@ -50,7 +50,7 @@ public class TDSFaultTolerant implements Runnable{
                     
                     TDS.writeString(-1, " [FTS]\tNO TERMINATION DETECTED IN " + maxWait + " ms" );
                     this.setDone();
-                    PerformanceLogger.instance().timeout(3);
+                    PerformanceLogger.instance().timeout(VERSIONS.FTS);
                 }, "TimeoutCount3");
                 wait();
             }catch(InterruptedException e){}
@@ -77,7 +77,7 @@ public class TDSFaultTolerant implements Runnable{
             
             TDS.writeString(0, " [ FTS ]\tInitially Active: " + initiallyActiveCount+ " (random): " + initiallyActiveList.toString());
             
-            PerformanceLogger.instance().setInitiallyActive(initiallyActiveCount, 2);
+            PerformanceLogger.instance().setInitiallyActive(initiallyActiveCount, VERSIONS.FTS);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner3(i, nnodes, network, initiallyActiveList.contains(i)); 
@@ -85,9 +85,9 @@ public class TDSFaultTolerant implements Runnable{
 
         } else if (Options.instance().get(BASIC_ALGO_TYPE) == BASIC_ALGO_DECENTRALIZED_EVEN){
             
-            TDS.writeString(0, " [ FTS ]\tInitially Active: " + PerformanceLogger.instance().getInitiallyActive(2) + " (even)");
+            TDS.writeString(0, " [ FTS ]\tInitially Active: " + PerformanceLogger.instance().getInitiallyActive(VERSIONS.FTS) + " (even)");
             
-            PerformanceLogger.instance().setInitiallyActive(nnodes % 2 == 0? nnodes / 2 : ((int) nnodes / 2) + 1, 2);
+            PerformanceLogger.instance().setInitiallyActive(nnodes % 2 == 0? nnodes / 2 : ((int) nnodes / 2) + 1, VERSIONS.FTS);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner3(i, nnodes, network, i % 2 == 0); 
@@ -96,7 +96,7 @@ public class TDSFaultTolerant implements Runnable{
             
             TDS.writeString(0, " [ FTS ]\tInitially Active: 1 (single)");
             
-            PerformanceLogger.instance().setInitiallyActive(1, 2);
+            PerformanceLogger.instance().setInitiallyActive(1, VERSIONS.FTS);
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner3(i, nnodes, network, i == 0); 

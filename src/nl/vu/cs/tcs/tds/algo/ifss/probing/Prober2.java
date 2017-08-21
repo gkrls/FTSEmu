@@ -2,6 +2,7 @@ package algo.ifss.probing;
 
 import main.TDS;
 import performance.PerformanceLogger;
+import util.Options.VERSIONS;
 import algo.ifss.network.Network2;
 import algo.ifss.node.NodeRunner2;
 
@@ -11,17 +12,18 @@ public class Prober2{
     private final Network2 network;
     
     private final NodeRunner2 nodeRunner;
-    private boolean waitNodeRunner = false;
+    private boolean waitNodeRunner;
     
     public Prober2(int mynode, int totalNodes, Network2 network, NodeRunner2 nodeRunner) {
-        this.nodeRunner = nodeRunner;
-        this.totalNodes = totalNodes;
         this.mynode = mynode;
+        this.totalNodes = totalNodes;
         this.network = network;
+        this.nodeRunner = nodeRunner;
+        this.waitNodeRunner = false;
         
         if(mynode == 0) {
             ProbeMessage2 token = new ProbeMessage2(mynode, totalNodes);
-            PerformanceLogger.instance().addTokenBits(2, token.copy());
+            PerformanceLogger.instance().addTokenBits(VERSIONS.IFSS, token.copy());
             network.sendFirstProbeMessage(0, token);
         }
     }
@@ -42,7 +44,7 @@ public class Prober2{
         nodeRunner.setBlack(mynode);
         nodeRunner.incSeq();
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(2, end - start);
+        PerformanceLogger.instance().addProcTime(VERSIONS.IFSS, end - start);
         
     }
     
@@ -68,7 +70,7 @@ public class Prober2{
             writeString("INCONSISTENT SNAPSHOT");
             propagate(token);
             long end = System.nanoTime();
-            PerformanceLogger.instance().addProcTime(2, end - start);
+            PerformanceLogger.instance().addProcTime(VERSIONS.IFSS, end - start);
         }
     }
     
@@ -78,8 +80,8 @@ public class Prober2{
                 + " milliseconds after last node became passive.");
         
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(2, end - start);
-        TDS.instance().announce(2);
+        PerformanceLogger.instance().addProcTime(VERSIONS.IFSS, end - start);
+        TDS.instance().announce(VERSIONS.IFSS);
     }
     
     private void propagate(ProbeMessage2 token) {
@@ -90,8 +92,8 @@ public class Prober2{
         nodeRunner.setBlack(mynode);
         nodeRunner.incSeq();
         
-        PerformanceLogger.instance().incTokens(2);
-        PerformanceLogger.instance().addTokenBits(2, token.copy());
+        PerformanceLogger.instance().incTokens(VERSIONS.IFSS);
+        PerformanceLogger.instance().addTokenBits(VERSIONS.IFSS, token.copy());
         /** proc time added by the caller when we return */
         
     }
@@ -113,6 +115,6 @@ public class Prober2{
     }
     
     private void writeString(String s) {
-        TDS.writeString(2, " Node " + mynode + ": \t" + s);
+        TDS.writeString(VERSIONS.IFSS, " Node " + mynode + ": \t" + s);
     }
 }

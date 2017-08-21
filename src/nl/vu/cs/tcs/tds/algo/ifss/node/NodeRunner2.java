@@ -19,7 +19,7 @@ public class NodeRunner2 implements Runnable{
     private boolean mustStop = false;
     private Random random;
     private boolean started = false;
-    private boolean isPassive = true;
+    private boolean isPassive;
     private Prober2 prober;
     
     
@@ -29,9 +29,9 @@ public class NodeRunner2 implements Runnable{
         this.isPassive = !initiallyActive;
         this.state = new NodeState2(!initiallyActive, mynode, nnodes);
         this.random = new Random();
-        this.random.setSeed(System.currentTimeMillis() + Double.doubleToLongBits(Math.random()) + this.hashCode());
-        network.registerNode(this);
         this.network = network;
+        this.network.registerNode(this);
+        this.random.setSeed(System.currentTimeMillis() + Double.doubleToLongBits(Math.random()) + this.hashCode());
         Thread t = new Thread(this);
         t.start();
     }
@@ -58,6 +58,7 @@ public class NodeRunner2 implements Runnable{
     }
     
     public synchronized void receiveMessage(NodeMessage2 m) {
+        long start = System.nanoTime();
         writeString("received message from " + m.getSenderId());
         this.state.setPassive(false);
         this.isPassive = false;
@@ -69,6 +70,8 @@ public class NodeRunner2 implements Runnable{
             
         }
         this.state.decCount();
+        long end = System.nanoTime();
+        PerformanceLogger.instance().addProcTime(VERSIONS.IFSS, end - start);
         notifyAll(); //maybe not needed
     }
     

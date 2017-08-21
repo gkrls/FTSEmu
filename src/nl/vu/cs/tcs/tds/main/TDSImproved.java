@@ -6,7 +6,6 @@ import util.Options;
 
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import algo.ifss.network.Network2;
 import algo.ifss.node.NodeRunner2;
@@ -15,7 +14,7 @@ import static util.Options.*;
 
 public class TDSImproved implements Runnable{
     
-    private static boolean done;
+    private volatile boolean done;
     private int nnodes;
     private NodeRunner2[] nodeRunners;
     private Network2 network;
@@ -44,7 +43,10 @@ public class TDSImproved implements Runnable{
                     } catch (Exception e) {}
                     
                     TDS.writeString(-1, " [I-FSS]\tNO TERMINATION DETECTED IN " + maxWait + " ms");
+                    
                     this.setDone();
+                    
+                    PerformanceLogger.instance().timeout(VERSIONS.IFSS);
                 }, "TimeoutCount_2");
                 wait();
             }catch (InterruptedException e){}
@@ -68,7 +70,8 @@ public class TDSImproved implements Runnable{
             TDS.writeString(0, " [IFSS ]\tInitially Active: " + initiallyActiveCount+ " (random): " + initiallyActiveList.toString());
             
             //System.out.println("RANDOM(" + initiallyActiveCount +"): " + initiallyActiveList.toString() );
-            PerformanceLogger.instance().setInitiallyActive(initiallyActiveCount, 2);
+            PerformanceLogger.instance().setInitiallyActive(initiallyActiveCount, VERSIONS.IFSS);
+            
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active
                 nodeRunners[i] = new NodeRunner2(i, nnodes, network, initiallyActiveList.contains(i)); 
@@ -76,9 +79,9 @@ public class TDSImproved implements Runnable{
 
         } else if (Options.instance().get(BASIC_ALGO_TYPE) == BASIC_ALGO_DECENTRALIZED_EVEN){
    
-            PerformanceLogger.instance().setInitiallyActive(nnodes % 2 == 0? nnodes / 2 : ((int) nnodes / 2) + 1, 2);
+            PerformanceLogger.instance().setInitiallyActive(nnodes % 2 == 0? nnodes / 2 : ((int) nnodes / 2) + 1, VERSIONS.IFSS);
             
-            TDS.writeString(0, " [IFSS ]\tInitially Active: " + PerformanceLogger.instance().getInitiallyActive(2) + " (even)");
+            TDS.writeString(0, " [IFSS ]\tInitially Active: " + PerformanceLogger.instance().getInitiallyActive(VERSIONS.IFSS) + " (even)");
             
             
             for ( int i = 0; i < nnodes; i++ ) {
@@ -89,7 +92,7 @@ public class TDSImproved implements Runnable{
             
             TDS.writeString(0, " [IFSS ]\tInitially Active: 1 (single)");
             
-            PerformanceLogger.instance().setInitiallyActive(1, 2);
+            PerformanceLogger.instance().setInitiallyActive(1, VERSIONS.IFSS);
             
             for ( int i = 0; i < nnodes; i++ ) {
                 // Here choose who starts as active

@@ -127,7 +127,7 @@ public class PerformanceLogger {
 	
     public synchronized void incBackupTokens(int version){
         switch(version) {
-            case 3: tds3.incBackupTokens(); break; // This line was case 4: tds5.incBackupTokens(); break;
+            case 3: tds3.incBackupTokens(); break; 
             default: return;
         }
     }
@@ -157,10 +157,13 @@ public class PerformanceLogger {
             case Options.BASIC_ALGO_DECENTRALIZED_EVEN: algoType = "even"; break;
             case Options.BASIC_ALGO_DECENTRALIZED_RANDOM: algoType = "random"; break;
         }
-                
+        
+        int crashLow = Options.instance().get(CRASHING_NODES_LOW);
+        int crashHigh = Options.instance().get(CRASHING_NODES_HIGH);
+        
         CSV_FILE = "[ " + fileVersionString + " ]" + "__" +
                 Options.instance().get(NUM_OF_NODES) + "-" +
-                (Options.instance().get(CRASHING_NODES) == -1? "Rnd" : Options.instance().get(CRASHING_NODES))+ "__" +
+                (Options.instance().get(CRASHING_NODES) == -1? "Rnd" : (crashLow + "-" + crashHigh)) + "__" +
                 (Options.instance().get(ACTIVITY_STRATEGY) == ACTIVITY_STRATEGY_COMPUTE_SEND? "compute-send": "n-activities") + "__" +
                 (Options.instance().get(PROB_DISTRIBUTION) == PROB_DISTRIBUTION_UNIFORM? "dist-uni": "dist-gaus") + "__" + includeCi + "__" +
                 (Options.instance().get(AVERAGE_NETWORK_LATENCY)) + "ms__" + algoType + ".csv";

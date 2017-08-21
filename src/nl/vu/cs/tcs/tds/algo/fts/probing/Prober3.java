@@ -6,10 +6,10 @@ import java.util.stream.IntStream;
 
 import main.TDS;
 import performance.PerformanceLogger;
+import util.Options.VERSIONS;
 import algo.fts.network.Network3;
 import algo.fts.node.FailureDetector;
 import algo.fts.node.NodeRunner3;
-import algo.fts.node.NodeState3;
 
 public class Prober3 {
     
@@ -34,7 +34,7 @@ public class Prober3 {
         if(mynode == 0) {
             ProbeMessage3 token = new ProbeMessage3(mynode, nnodes);
             token.incSeq();
-            PerformanceLogger.instance().addTokenBits(3, token.copy());
+            PerformanceLogger.instance().addTokenBits(VERSIONS.FTS, token.copy());
             network.sendProbeMessage(token, 0);
         }
     }
@@ -137,9 +137,9 @@ public class Prober3 {
         
         
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(3, end - start);
-        PerformanceLogger.instance().incTokens(3);
-        PerformanceLogger.instance().addTokenBits(3, token.copy());
+        PerformanceLogger.instance().addProcTime(VERSIONS.FTS, end - start);
+        PerformanceLogger.instance().incTokens(VERSIONS.FTS);
+        PerformanceLogger.instance().addTokenBits(VERSIONS.FTS, token.copy());
     }
     
     /**
@@ -171,7 +171,7 @@ public class Prober3 {
             nodeRunner.setBlack(nodeRunner.furthest(nodeRunner.getBlack(), nodeRunner.getNext()));
         
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(3, end - start);
+        PerformanceLogger.instance().addProcTime(VERSIONS.FTS, end - start);
     }
     
     private void announce(long start) {
@@ -179,8 +179,8 @@ public class Prober3 {
                 + (System.currentTimeMillis() - network.getLastPassive())
                 + " milliseconds after last node became passive.");
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(3, end - start);
-        TDS.instance().announce(3);
+        PerformanceLogger.instance().addProcTime(VERSIONS.FTS, end - start);
+        TDS.instance().announce(VERSIONS.FTS);
     }
 
     public void waitUntilPassive() {
@@ -191,7 +191,7 @@ public class Prober3 {
     }
     
     private void writeString(String s) {
-        TDS.writeString(3, " Node " + mynode + ": \t" + s);
+        TDS.writeString(VERSIONS.FTS, " Node " + mynode + ": \t" + s);
     }
 
 

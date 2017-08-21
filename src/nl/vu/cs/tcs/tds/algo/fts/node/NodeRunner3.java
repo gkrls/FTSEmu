@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import util.Options;
+import util.Options.VERSIONS;
 import main.TDS;
 import performance.PerformanceLogger;
 import algo.fts.network.Network3;
@@ -35,7 +36,7 @@ public class NodeRunner3 implements Runnable{
     private boolean mustStop = false;
     private Random random;
     private boolean started = false;
-    private boolean isPassive = false;
+    private boolean isPassive;
     private Prober3 prober;
     private AtomicBoolean crashed;
     private Thread t;
@@ -115,7 +116,7 @@ public class NodeRunner3 implements Runnable{
             }
         }
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(3, end - start);
+        PerformanceLogger.instance().addProcTime(VERSIONS.FTS, end - start);
     }
     
     private void activate() {
@@ -135,7 +136,6 @@ public class NodeRunner3 implements Runnable{
         writeString("Started");
         
         while(!shouldStop()){
-            //writeString("ACTIVE");
             synchronized(this) {
                 while(state.isPassive()){
                     try {wait(); }catch(InterruptedException e) {}

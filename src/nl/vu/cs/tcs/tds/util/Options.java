@@ -5,6 +5,13 @@ import java.util.stream.IntStream;
 
 public class Options {
     
+    public static final class VERSIONS {
+        private VERSIONS() {}
+        public static final int OFSS = 1;
+        public static final int IFSS = 2;
+        public static final int FTS = 3;
+    }
+    
     public static final int OPTION_ERR = -12345;
     
     public static String CSV_FOLDER = "csv";

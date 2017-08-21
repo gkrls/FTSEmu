@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import main.TDS;
 import performance.PerformanceLogger;
+import util.Options.VERSIONS;
 import algo.fts.network.Network3;
 import algo.fts.probing.ProbeMessage3;
 import algo.fts.probing.Prober3;
@@ -74,11 +75,10 @@ public class FailureDetector {
                         
                         lastToken.setSender(this.mynode);
                         
-                        
                         network.sendProbeMessage(lastToken, nodeRunner.getNext());
-                        PerformanceLogger.instance().incTokens(3);
-                        PerformanceLogger.instance().incBackupTokens(3);
-                        PerformanceLogger.instance().addTokenBits(3, lastToken.copy());
+                        PerformanceLogger.instance().incTokens(VERSIONS.FTS);
+                        PerformanceLogger.instance().incBackupTokens(VERSIONS.FTS);
+                        PerformanceLogger.instance().addTokenBits(VERSIONS.FTS, lastToken.copy());
                         
                         
                     }
@@ -90,11 +90,11 @@ public class FailureDetector {
         }
         
         long end = System.nanoTime();
-        PerformanceLogger.instance().addProcTime(3, end - start);
+        PerformanceLogger.instance().addProcTime(VERSIONS.FTS, end - start);
     }
 
     private void writeString(String string) {
-        TDS.writeString(3, " Node " + mynode + ": \t" + string);
+        TDS.writeString(VERSIONS.FTS, " Node " + mynode + ": \t" + string);
     }
     
     public void updateLastToken(ProbeMessage3 token) {
