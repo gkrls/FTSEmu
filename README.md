@@ -3,7 +3,7 @@ A multi-threaded distributed system emulator. It has been developed as a platfor
 
 More: <br/>
 [1] Wan Fokkink, Per Fuchs, Georgios Karlos, Fault-Tolerant Termination Detection with Safra's Algorithm <br>
-[2] Georgios Karlos, Emulation of a Fault-Tolerant Variant of Safra's Termination Detection Algoritm <br/>
+[2] [Georgios Karlos, Emulation of a Fault-Tolerant Variant of Safra's Termination Detection Algoritm](https://github.com/gkarlos/FTSEmu/blob/master/ft-safra-emulation.pdf) <br/>
 [3] [Murat Demirbas, Anish Arora, An Optimal Termination Detection Algorithm for Rings](https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF) <br/>
 [4] [Edsger W. Dijkstra, Shmuel Safra's Version of Termination Detection](https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF) <br/>
 
