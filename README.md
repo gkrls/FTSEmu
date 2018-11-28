@@ -1,11 +1,11 @@
-# TDS
-A Distributed System Simulator for a single node. It has been developed as a platform for analyzing and benchmarking a novel approach on Fault-Tolerant Termination Detection based on an optimized  version of Safra's Termination Detection algorithm. 
+# FTSEmu
+A multi-threaded distributed system emulator. It has been developed as a platform for testing and analyzing a novel approach on Fault-Tolerant, Distributed Termination Detection based on an optimized version of Safra's Termination Detection algorithm. 
 
-More: TBA
-
-Ref:<br/>
-[1] https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF<br/>
-[2] http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.22.4105&rep=rep1&type=pdf
+More: <br/>
+[1] Wan Fokkink, Per Fuchs, Georgios Karlos, Fault-Tolerant Termination Detection with Safra's Algorithm <br>
+[2] Georgios Karlos, Emulation of a Fault-Tolerant Variant of Safra's Termination Detection Algoritm <br/>
+[3] [Murat Demirbas, Anish Arora, An Optimal Termination Detection Algorithm for Rings](https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF) <br/>
+[4] [Edsger W. Dijkstra, Shmuel Safra's Version of Termination Detection](https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF) <br/>
 
 
 # Usage 
