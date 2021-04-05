@@ -1,11 +1,12 @@
 # FTSEmu
-A multi-threaded distributed system emulator. It has been developed as a platform for testing and analyzing a novel Fault-Tolerant, Distributed Termination Detection algorithm based on Safra's algorithm. 
+A multi-threaded distributed system emulator. It has been developed as a platform for testing and analyzing a novel Fault-Tolerant, Distributed Termination Detection algorithm based on the algorithm by Shmuel Safra.
+
+An implementation of the fault-tolerant algorithm has been applied to a fault-tolerant version of the Chandy-Misra routing algorithm as well as a fault-tolerant version of the Afek-Kutten-Yung self-stabilizing spanning tree algorithm. The implementation can be found [here](https://github.com/PerFuchs/safra-termination-detection-fault-tolerant).
 
 More: <br/>
 [1] Georgios Karlos, Wan Fokkink, Per Fuchs - Fault-Tolerant Termination Detection with Safra's Algorithm <br>
 [2] [Georgios Karlos - Emulation of a Fault-Tolerant Variant of Safra's Termination Detection Algoritm](https://github.com/gkarlos/FTSEmu/blob/master/ft-safra-emulation.pdf) <br/>
 [3] [Edsger W. Dijkstra - Shmuel Safra's Version of Termination Detection](https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF) <br/>
-
 
 # Usage 
  - Build
