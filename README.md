@@ -1,11 +1,10 @@
 # FTSEmu
-A multi-threaded distributed system emulator. It has been developed as a platform for testing and analyzing a novel approach on Fault-Tolerant, Distributed Termination Detection based on an optimized version of Safra's Termination Detection algorithm. For a description of how the emulator works as well as experimental results see [2].
+A multi-threaded distributed system emulator. It has been developed as a platform for testing and analyzing a novel Fault-Tolerant, Distributed Termination Detection algorithm based on Safra's algorithm. 
 
 More: <br/>
-[1] Wan Fokkink, Per Fuchs, Georgios Karlos, Fault-Tolerant Termination Detection with Safra's Algorithm <br>
-[2] [Georgios Karlos, Emulation of a Fault-Tolerant Variant of Safra's Termination Detection Algoritm](https://github.com/gkarlos/FTSEmu/blob/master/ft-safra-emulation.pdf) <br/>
-[3] [Murat Demirbas, Anish Arora, An Optimal Termination Detection Algorithm for Rings](https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF) <br/>
-[4] [Edsger W. Dijkstra, Shmuel Safra's Version of Termination Detection](https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF) <br/>
+[1] Georgios Karlos, Wan Fokkink, Per Fuchs - Fault-Tolerant Termination Detection with Safra's Algorithm <br>
+[2] [Georgios Karlos - Emulation of a Fault-Tolerant Variant of Safra's Termination Detection Algoritm](https://github.com/gkarlos/FTSEmu/blob/master/ft-safra-emulation.pdf) <br/>
+[3] [Edsger W. Dijkstra - Shmuel Safra's Version of Termination Detection](https://www.cs.utexas.edu/users/EWD/ewd09xx/EWD998.PDF) <br/>
 
 
 # Usage 
